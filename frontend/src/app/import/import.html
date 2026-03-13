@@ -12,9 +12,9 @@
       <div class="filter-group">
         <label>TIME CONTROL</label>
         <div class="toggle-buttons">
-          <button [class.active]="selectedTimeControl() === 'bullet'" (click)="setTimeControl('bullet')">Bullet</button>
-          <button [class.active]="selectedTimeControl() === 'blitz'" (click)="setTimeControl('blitz')">Blitz</button>
-          <button [class.active]="selectedTimeControl() === 'rapid'" (click)="setTimeControl('rapid')">Rapid</button>
+          <button [class.active]="selectedTimeControls().includes('bullet')" (click)="setTimeControl('bullet')">Bullet</button>
+          <button [class.active]="selectedTimeControls().includes('blitz')" (click)="setTimeControl('blitz')">Blitz</button>
+          <button [class.active]="selectedTimeControls().includes('rapid')" (click)="setTimeControl('rapid')">Rapid</button>
         </div>
       </div>
 
@@ -37,7 +37,16 @@
     </div>
 
     <!-- Progress Card -->
-    <div class="glass-card progress-card" [class.visible]="importStatus() !== 'idle'">
+    <div class="glass-card progress-card">
+      <!-- Idle state message -->
+      <div class="idle-state" *ngIf="importStatus() === 'idle'">
+        <div class="idle-icon">
+          <lucide-icon [img]="Monitor" size="48" [strokeWidth]="1.5"></lucide-icon>
+        </div>
+        <h4>No games fetched yet</h4>
+        <p>Set your filters and click "Fetch Games" to start generating puzzles.</p>
+      </div>
+
       <div class="progress-section" *ngIf="importStatus() !== 'idle'">
         <div class="progress-info">
           <div class="current-status">{{ 
