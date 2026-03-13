@@ -61,25 +61,42 @@
         <div class="card-title">MOVES PLAYED</div>
         <div class="moves-list">
           <div class="move-row" *ngFor="let move of moves">
-            <span class="move-number">{{ move.number }}.</span>
-            <span class="move-item" [class.active]="!move.black">{{ move.white }}</span>
-            <span class="move-item" *ngIf="move.black">{{ move.black }}</span>
+            <div class="move-item move-white" [class.active]="!move.black">
+                <span class="move-number">{{ move.number }}.</span>
+                <span class="move-text">{{ move.white }}</span>
+            </div>
+            <div class="move-item move-black" *ngIf="move.black">
+                <span class="move-text">{{ move.black }}</span>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="hint-section">
-        <div class="hint-container">
+        <!-- Default Hint State -->
+        <div *ngIf="!isCorrect" class="hint-container">
           <div class="hint-icon-box">
             <lucide-icon [img]="Lightbulb" size="32"></lucide-icon>
           </div>
           <p>Find the winning tactic for White...</p>
         </div>
+
+        <!-- Success State -->
+        <div *ngIf="isCorrect" class="success-card">
+          <div class="success-icon">
+            <lucide-icon [img]="CheckCircle2" size="48"></lucide-icon>
+          </div>
+          <h3>Correct!</h3>
+          <p>You found the winning tactic.</p>
+          <button class="next-btn">
+            Next Puzzle <lucide-icon [img]="ChevronRight" size="18"></lucide-icon>
+          </button>
+        </div>
       </div>
 
       <div class="sim-actions">
-          <button class="sim-btn">Sim Win</button>
-          <button class="sim-btn">Sim Loss</button>
+          <button class="sim-btn" (click)="isCorrect = true">Sim Win</button>
+          <button class="sim-btn" (click)="isCorrect = false">Sim Loss</button>
       </div>
     </app-glass-card>
   </div>

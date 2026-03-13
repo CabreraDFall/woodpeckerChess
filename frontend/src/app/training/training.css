@@ -182,92 +182,128 @@ app-glass-card {
   display: flex;
   flex-direction: column;
   padding: 32px !important;
+  background: #0a0a0a !important;
 }
 
 .moves-section {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 16px;
+  background: #000000; /* Pure black box as in image */
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
   padding: 24px;
-  flex: 0 0 auto;
   margin-bottom: 24px;
 }
 
 .card-title {
-  color: var(--muted-foreground);
+  color: #444444;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  margin-bottom: 20px;
-  opacity: 0.5;
-}
-
-.moves-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  margin-bottom: 24px;
+  text-transform: uppercase;
 }
 
 .move-row {
   display: grid;
-  grid-template-columns: 40px 1fr 1fr;
-  padding: 10px 0;
-  font-size: 1rem;
-  align-items: center;
-}
-
-.move-number {
-  color: #555555;
-  font-weight: 600;
+  grid-template-columns: 1fr 1fr; /* Two column layout for pairs */
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .move-item {
-  font-weight: 600;
-  color: var(--foreground);
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  color: #bababa;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
-.move-item:hover {
-  background: var(--glass-05);
+.move-number {
+  color: #444444;
+  width: 20px;
 }
 
 .move-item.active {
   background: #1a1a1a;
-  border: 1px solid var(--glass-10);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
 }
 
 .hint-section {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .hint-container {
-  width: 100%;
-  padding: 32px;
-  border: 2px dashed var(--glass-10);
-  border-radius: 20px;
+  padding: 40px;
+  border: 1px dashed #1a1a1a;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  color: var(--muted-foreground);
+  color: #444444;
 }
 
 .hint-icon-box {
-  margin-bottom: 16px;
-  opacity: 0.2;
+  margin-bottom: 12px;
+  opacity: 0.3;
 }
 
 .hint-container p {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.85rem;
   margin: 0;
-  opacity: 0.6;
+}
+
+.success-card {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.success-icon {
+  color: #10b981;
+  margin-bottom: 16px;
+}
+
+.success-card h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.success-card p {
+  color: #666666;
+  font-size: 0.95rem;
+  margin: 0 0 24px 0;
+}
+
+.next-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.next-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
 }
 
 .sim-actions {
@@ -275,22 +311,17 @@ app-glass-card {
   justify-content: space-between;
   margin-top: 24px;
   padding-top: 24px;
-  border-top: 1px solid var(--glass-05);
 }
 
 .sim-btn {
   background: transparent;
   border: none;
-  color: var(--muted-foreground);
-  font-size: 0.8rem;
+  color: #333333;
+  font-size: 0.75rem;
   cursor: pointer;
   font-weight: 700;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-}
-
-.sim-btn:hover {
-  opacity: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 1024px) {

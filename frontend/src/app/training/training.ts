@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, ChevronLeft, Clock, Lightbulb, RotateCcw, SkipForward } from 'lucide-angular';
+import { LucideAngularModule, ChevronLeft, Clock, Lightbulb, RotateCcw, SkipForward, CheckCircle2, ChevronRight } from 'lucide-angular';
 import { GlassCardComponent } from '../shared/components/glass-card/glass-card';
 
 interface Move {
@@ -22,11 +22,14 @@ export class TrainingComponent {
   readonly Lightbulb = Lightbulb;
   readonly RotateCcw = RotateCcw;
   readonly SkipForward = SkipForward;
+  readonly CheckCircle2 = CheckCircle2;
+  readonly ChevronRight = ChevronRight;
 
   puzzleNumber = 23;
   totalPuzzles = 120;
   timer = '01:42';
   hintsLeft = 2;
+  isCorrect = false; // Toggle for testing success view
 
   moves: Move[] = [
     { number: 1, white: 'e4', black: 'c5' },
