@@ -1,0 +1,78 @@
+<div class="settings-container">
+  <div class="settings-header">
+    <h1>Settings</h1>
+    <p class="subtitle">Configure your training environment.</p>
+  </div>
+
+  <div class="settings-card">
+    <!-- Training Cycle -->
+    <div class="settings-section">
+      <div class="section-label">TRAINING CYCLE</div>
+      
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label>CYCLE DURATION</label>
+          <div class="select-wrapper">
+            <select [(ngModel)]="cycleDuration">
+              <option value="1 week">1 week</option>
+              <option value="2 weeks">2 weeks</option>
+              <option value="1 month">1 month</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="label-with-value">
+            <label>MAX PUZZLES</label>
+            <span class="value-badge">{{ maxPuzzles }}</span>
+          </div>
+          <div class="range-wrapper">
+            <span class="range-min">50</span>
+            <input type="range" min="50" max="500" step="50" [(ngModel)]="maxPuzzles">
+            <span class="range-max">500</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Automation -->
+    <div class="settings-section">
+      <div class="section-label">AUTOMATION</div>
+      
+      <div class="automation-row">
+        <div class="automation-info">
+          <div class="automation-title">Auto-generate monthly sets</div>
+          <p class="automation-desc">Automatically create new sets from last month's games.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="autoGenerate">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Appearance -->
+    <div class="settings-section">
+      <div class="section-label">APPEARANCE</div>
+      
+      <div class="appearance-tabs">
+        <button [class.active]="theme === 'dark'" (click)="theme = 'dark'">
+          Dark Theme
+        </button>
+        <button [class.active]="theme === 'light'" (click)="theme = 'light'">
+          Light Theme
+        </button>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button class="btn-cancel" (click)="cancel()">Cancel</button>
+      <button class="btn-save" (click)="saveChanges()">Save Changes</button>
+    </div>
+  </div>
+</div>
