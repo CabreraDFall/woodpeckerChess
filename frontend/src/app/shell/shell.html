@@ -1,0 +1,66 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo" routerLink="/">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <span class="logo-text">Woodpecker</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+        <lucide-icon [img]="LayoutDashboard" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Dashboard
+      </a>
+      <a href="#" class="nav-item">
+        <lucide-icon [img]="Play" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Training
+      </a>
+      <a href="#" class="nav-item">
+        <lucide-icon [img]="RotateCcw" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Puzzle Sets
+      </a>
+      <a href="#" class="nav-item">
+        <lucide-icon [img]="History" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> All Puzzles
+      </a>
+      <a routerLink="/import" routerLinkActive="active" class="nav-item">
+        <lucide-icon [img]="Download" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Import Games
+      </a>
+      <a href="#" class="nav-item">
+        <lucide-icon [img]="ChartColumn" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Statistics
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a href="#" class="nav-item">
+        <lucide-icon [img]="Settings" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Settings
+      </a>
+      <a href="#" class="nav-item logout">
+        <lucide-icon [img]="LogOut" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div class="search-box">
+        <lucide-icon [img]="Search" class="search-icon" size="18" [strokeWidth]="1.5"></lucide-icon>
+        <input type="text" placeholder="Find a puzzle...">
+      </div>
+
+      <div class="user-profile">
+        <div class="user-info">
+          <span class="user-name">{{ userName }}</span>
+          <span class="plan-badge">{{ planType }}</span>
+        </div>
+        <div class="user-avatar">GF</div>
+      </div>
+    </header>
+
+    <div class="content-scroll">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,209 @@
+.import-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--muted-foreground);
+  font-size: 1.1rem;
+}
+
+/* Glass Card Enhancements */
+.glass-card {
+  background: var(--glass-05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-10);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.filters-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Custom Toggle Buttons */
+.toggle-buttons {
+  display: flex;
+  background: var(--glass-05);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-08);
+}
+
+.toggle-buttons button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  padding: 8px 16px;
+  border-radius: calc(var(--radius-md) - 2px);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-buttons button:hover {
+  color: var(--foreground);
+}
+
+.toggle-buttons button.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Premium Select Box */
+select {
+  background: var(--glass-08);
+  border: 1px solid var(--glass-10);
+  color: var(--foreground);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: var(--ring);
+}
+
+/* Progress Circle */
+.progress-circle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.progress-circle {
+  width: 160px;
+  height: 160px;
+  transform: rotate(-90deg);
+}
+
+.progress-circle circle {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.progress-circle .bg {
+  stroke: var(--glass-08);
+}
+
+.progress-circle .fg {
+  stroke: var(--primary);
+  stroke-dasharray: 283;
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 0 8px var(--primary));
+}
+
+.percentage {
+  fill: var(--foreground);
+  font-size: 1.5rem;
+  font-weight: 700;
+  transform: rotate(90deg);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+/* Step Items Animation */
+.status-msg h4 {
+  margin: 0;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.3s ease;
+  opacity: 0.5;
+}
+
+.step-item.active {
+  opacity: 1;
+  background: var(--glass-05);
+  transform: translateX(4px);
+}
+
+.step-item.completed {
+  opacity: 1;
+}
+
+.step-item.completed .step-label {
+  color: var(--success);
+}
+
+.step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.fetch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  font-size: 1rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fetch-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+}
+
+.fetch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

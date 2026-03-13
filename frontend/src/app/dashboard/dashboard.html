@@ -1,149 +1,85 @@
-<div class="dashboard-container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-        </svg>
-      </div>
-      <span class="logo-text">Woodpecker</span>
+<section class="welcome-section">
+  <h1>Welcome back, {{ userName }}</h1>
+  <p class="subtitle">Your training is looking sharp today.</p>
+  <div class="header-actions">
+    <button class="btn-secondary" routerLink="/import">
+      <lucide-icon [img]="ArrowDownToLine" size="18" [strokeWidth]="1.5"></lucide-icon>
+      Import
+    </button>
+    <button class="btn-primary">Continue Training</button>
+  </div>
+</section>
+
+<div class="dashboard-grid">
+  <!-- Current Training Cycle -->
+  <div class="glass-card cycle-card">
+    <div class="card-header">
+      <h3>Current Training Cycle</h3>
+      <span class="status-badge">ACTIVE</span>
     </div>
-    
-    <nav class="nav-menu">
-      <a href="#" class="nav-item active">
-        <lucide-icon [img]="LayoutDashboard" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Dashboard
-      </a>
-      <a href="#" class="nav-item">
-        <lucide-icon [img]="Play" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Training
-      </a>
-      <a href="#" class="nav-item">
-        <lucide-icon [img]="RotateCcw" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Puzzle Sets
-      </a>
-      <a href="#" class="nav-item">
-        <lucide-icon [img]="History" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> All Puzzles
-      </a>
-      <a href="#" class="nav-item">
-        <lucide-icon [img]="Download" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Import Games
-      </a>
-      <a href="#" class="nav-item">
-        <lucide-icon [img]="ChartColumn" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Statistics
-      </a>
-    </nav>
-    
-    <div class="sidebar-bottom">
-      <a href="#" class="nav-item">
-        <lucide-icon [img]="Settings" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Settings
-      </a>
-      <a href="#" class="nav-item logout">
-        <lucide-icon [img]="LogOut" class="icon" size="20" [strokeWidth]="1.5"></lucide-icon> Logout
-      </a>
-    </div>
-  </aside>
+    <p class="card-subtitle">January Strategic Set · Cycle #2</p>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <header class="top-bar">
-      <div class="search-box">
-        <lucide-icon [img]="Search" class="search-icon" size="18" [strokeWidth]="1.5"></lucide-icon>
-        <input type="text" placeholder="Find a puzzle...">
+    <div class="progress-container">
+      <div class="progress-info">
+        <span>Progress</span>
+        <span>45 / 120 puzzles</span>
       </div>
-      
-      <div class="user-profile">
-        <div class="user-info">
-          <span class="user-name">{{ userName }}</span>
-          <span class="plan-badge">{{ planType }}</span>
-        </div>
-        <div class="user-avatar">GF</div>
-      </div>
-    </header>
-
-    <div class="content-scroll">
-      <section class="welcome-section">
-        <h1>Welcome back, {{ userName }}</h1>
-        <p class="subtitle">Your training is looking sharp today.</p>
-        <div class="header-actions">
-          <button class="btn-secondary">
-            <lucide-icon [img]="ArrowDownToLine" size="18" [strokeWidth]="1.5"></lucide-icon>
-            Import
-          </button>
-          <button class="btn-primary">Continue Training</button>
-        </div>
-      </section>
-
-      <div class="dashboard-grid">
-        <!-- Current Training Cycle -->
-        <div class="glass-card cycle-card">
-          <div class="card-header">
-            <h3>Current Training Cycle</h3>
-            <span class="status-badge">ACTIVE</span>
-          </div>
-          <p class="card-subtitle">January Strategic Set · Cycle #2</p>
-          
-          <div class="progress-container">
-            <div class="progress-info">
-              <span>Progress</span>
-              <span>45 / 120 puzzles</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 37%"></div>
-            </div>
-          </div>
-          
-          <div class="card-footer">
-            <span class="time-left"><lucide-icon [img]="Clock" size="14"></lucide-icon> 12 days remaining</span>
-            <a href="#" class="view-details">View Details <lucide-icon [img]="ChevronRight" size="14"></lucide-icon></a>
-          </div>
-        </div>
-
-        <!-- Performance -->
-        <div class="glass-card performance-card">
-          <h3>Performance</h3>
-          <div class="stats-list">
-            <div class="stat-item" *ngFor="let stat of performanceStats">
-              <span class="stat-label">{{ stat.label }}</span>
-              <span class="stat-value">{{ stat.value }}</span>
-            </div>
-          </div>
-          <button class="btn-secondary full-width">View Detailed Stats</button>
-        </div>
-
-        <!-- Recent Puzzles -->
-        <div class="glass-card puzzles-card">
-          <h3>Recent Puzzles</h3>
-          <div class="puzzles-list">
-            <div class="puzzle-item" *ngFor="let puzzle of recentPuzzles">
-              <span class="puzzle-id">{{ puzzle.id }}</span>
-              <span class="puzzle-name">{{ puzzle.name }}</span>
-              <span class="puzzle-rating">{{ puzzle.rating }}</span>
-              <span class="puzzle-status" [class.success]="puzzle.success" [class.fail]="!puzzle.success">
-                <lucide-icon [img]="puzzle.success ? CheckCircle2 : XCircle" size="18"></lucide-icon>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Weekly Accuracy -->
-        <div class="glass-card accuracy-card">
-          <h3>Weekly Accuracy</h3>
-          <div class="chart-container">
-            <!-- Simulated Chart using SVG -->
-            <svg viewBox="0 0 400 120" class="mini-chart">
-              <defs>
-                <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="var(--glass-10)" />
-                  <stop offset="100%" stop-color="transparent" />
-                </linearGradient>
-              </defs>
-              <path d="M0,80 Q50,70 100,75 T200,50 T300,35 T400,45" fill="none" stroke="white" stroke-width="2" />
-              <path d="M0,80 Q50,70 100,75 T200,50 T300,35 T400,45 V120 H0 Z" fill="url(#chartGradient)" />
-            </svg>
-            <div class="chart-labels">
-              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-            </div>
-          </div>
-        </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 37%"></div>
       </div>
     </div>
-  </main>
+
+    <div class="card-footer">
+      <span class="time-left"><lucide-icon [img]="Clock" size="14"></lucide-icon> 12 days remaining</span>
+      <a href="#" class="view-details">View Details <lucide-icon [img]="ChevronRight" size="14"></lucide-icon></a>
+    </div>
+  </div>
+
+  <!-- Performance -->
+  <div class="glass-card performance-card">
+    <h3>Performance</h3>
+    <div class="stats-list">
+      <div class="stat-item" *ngFor="let stat of performanceStats">
+        <span class="stat-label">{{ stat.label }}</span>
+        <span class="stat-value">{{ stat.value }}</span>
+      </div>
+    </div>
+    <button class="btn-secondary full-width">View Detailed Stats</button>
+  </div>
+
+  <!-- Recent Puzzles -->
+  <div class="glass-card puzzles-card">
+    <h3>Recent Puzzles</h3>
+    <div class="puzzles-list">
+      <div class="puzzle-item" *ngFor="let puzzle of recentPuzzles">
+        <span class="puzzle-id">{{ puzzle.id }}</span>
+        <span class="puzzle-name">{{ puzzle.name }}</span>
+        <span class="puzzle-rating">{{ puzzle.rating }}</span>
+        <span class="puzzle-status" [class.success]="puzzle.success" [class.fail]="!puzzle.success">
+          <lucide-icon [img]="puzzle.success ? CheckCircle2 : XCircle" size="18"></lucide-icon>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly Accuracy -->
+  <div class="glass-card accuracy-card">
+    <h3>Weekly Accuracy</h3>
+    <div class="chart-container">
+      <!-- Simulated Chart using SVG -->
+      <svg viewBox="0 0 400 120" class="mini-chart">
+        <defs>
+          <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="var(--glass-10)" />
+            <stop offset="100%" stop-color="transparent" />
+          </linearGradient>
+        </defs>
+        <path d="M0,80 Q50,70 100,75 T200,50 T300,35 T400,45" fill="none" stroke="white" stroke-width="2" />
+        <path d="M0,80 Q50,70 100,75 T200,50 T300,35 T400,45 V120 H0 Z" fill="url(#chartGradient)" />
+      </svg>
+      <div class="chart-labels">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      </div>
+    </div>
+  </div>
 </div>

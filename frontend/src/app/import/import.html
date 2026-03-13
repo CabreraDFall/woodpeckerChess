@@ -1,0 +1,75 @@
+<div class="import-content">
+  <section class="page-header">
+    <h1>Import Games</h1>
+    <p class="subtitle">Download your games to generate personalized puzzles.</p>
+  </section>
+
+  <div class="import-grid">
+    <!-- Filters Card -->
+    <div class="glass-card filters-card">
+      <h3>Filters</h3>
+      
+      <div class="filter-group">
+        <label>TIME CONTROL</label>
+        <div class="toggle-buttons">
+          <button [class.active]="selectedTimeControl() === 'bullet'" (click)="setTimeControl('bullet')">Bullet</button>
+          <button [class.active]="selectedTimeControl() === 'blitz'" (click)="setTimeControl('blitz')">Blitz</button>
+          <button [class.active]="selectedTimeControl() === 'rapid'" (click)="setTimeControl('rapid')">Rapid</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>DATE RANGE</label>
+        <select [value]="selectedDateRange()" (change)="selectedDateRange.set($any($event.target).value)">
+          <option value="1">Last 24 hours</option>
+          <option value="7">Last 7 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+      </div>
+
+      <button class="btn-primary fetch-btn" (click)="fetchGames()" [disabled]="importStatus() !== 'idle' && importStatus() !== 'completed'">
+        <lucide-icon [img]="ArrowDownToLine" size="20" [strokeWidth]="2.5"></lucide-icon>
+        <span>{{ importStatus() === 'idle' || importStatus() === 'completed' ? 'Fetch Games' : 'Fetching...' }}</span>
+      </button>
+    </div>
+
+    <!-- Progress Card (Hidden when idle) -->
+    <div class="glass-card progress-card" *ngIf="importStatus() !== 'idle'">
+      <div class="progress-circle-container">
+        <svg class="progress-circle" viewBox="0 0 100 100">
+          <circle class="bg" cx="50" cy="50" r="45"></circle>
+          <circle class="fg" cx="50" cy="50" r="45" [style.stroke-dashoffset]="283 - (283 * importProgress() / 100)"></circle>
+          <text x="50" y="50" class="percentage">{{ importProgress() }}%</text>
+        </svg>
+      </div>
+
+      <div class="status-msg">
+        <h4>{{ 
+          importStatus() === 'fetching' ? 'Downloading Games' : 
+          importStatus() === 'analyzing' ? 'Analyzing Positions' : 
+          importStatus() === 'generating' ? 'Generating Puzzles' : 
+          'Import Completed'
+        }}</h4>
+      </div>
+
+      <div class="steps-list">
+        <div class="step-item" *ngFor="let step of steps" 
+              [class.active]="importStatus() === step.id"
+              [class.completed]="(importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                importStatus() === 'completed'">
+          <span class="step-icon">
+            <lucide-icon *ngIf="!((importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                  (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                  importStatus() === 'completed')" [img]="step.icon" size="18" [strokeWidth]="2"></lucide-icon>
+            <lucide-icon *ngIf="(importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                importStatus() === 'completed'" [img]="CheckCircle" size="18" [strokeWidth]="2" color="#4ade80"></lucide-icon>
+          </span>
+          <span class="step-label">{{ step.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

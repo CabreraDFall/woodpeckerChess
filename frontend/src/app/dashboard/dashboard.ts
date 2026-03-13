@@ -1,25 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, LayoutDashboard, Play, RotateCcw, ChartColumn, Download, History, Settings, LogOut, Search, Clock, ArrowDownToLine, CheckCircle2, XCircle, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Clock, ArrowDownToLine, CheckCircle2, XCircle, ChevronRight } from 'lucide-angular';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class DashboardComponent {
   // Expose icons to the template
-  readonly LayoutDashboard = LayoutDashboard;
-  readonly Play = Play;
-  readonly RotateCcw = RotateCcw;
-  readonly History = History;
-  readonly Download = Download;
-  readonly ChartColumn = ChartColumn;
-  readonly Settings = Settings;
-  readonly LogOut = LogOut;
-  readonly Search = Search;
   readonly Clock = Clock;
   readonly ArrowDownToLine = ArrowDownToLine;
   readonly CheckCircle2 = CheckCircle2;
@@ -28,7 +20,7 @@ export class DashboardComponent {
 
   userName = 'GrandmasterFlash';
   planType = 'PREMIUM PLAN';
-  
+
   recentPuzzles = [
     { id: 'PZ-1000', name: 'Lichess #2159803', rating: 1400, success: true },
     { id: 'PZ-1001', name: 'Lichess #6701061', rating: 1425, success: false },
