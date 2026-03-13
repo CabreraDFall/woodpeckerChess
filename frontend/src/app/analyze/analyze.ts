@@ -10,13 +10,20 @@ interface Game {
   speed: string;
 }
 
+import { LucideAngularModule, X, ArrowRight, ArrowLeft, Check, Circle } from 'lucide-angular';
+
 @Component({
   selector: 'app-analyze',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, LucideAngularModule],
   templateUrl: './analyze.html',
 })
 export class AnalyzeComponent implements OnInit, OnDestroy {
+  readonly X = X;
+  readonly ArrowRight = ArrowRight;
+  readonly ArrowLeft = ArrowLeft;
+  readonly Check = Check;
+  readonly Circle = Circle;
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
 

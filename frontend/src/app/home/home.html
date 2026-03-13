@@ -32,18 +32,18 @@
     margin-top: 1.5rem;
   }
   .game-card {
-    background: white;
+    background: var(--card);
     padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: all 0.2s;
   }
   .game-card:hover {
-    border-color: #3498db;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
   }
   .game-info {
     display: flex;
@@ -51,44 +51,44 @@
   }
   .game-id {
     font-size: 0.8rem;
-    color: #888;
+    color: var(--muted-foreground);
   }
   .game-players {
     font-weight: 500;
   }
   .analyze-btn {
-    background: #3498db;
-    color: white;
+    background: var(--primary);
+    color: var(--primary-foreground);
     padding: 0.5rem 1rem;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     text-decoration: none;
     font-size: 0.9rem;
     transition: background 0.2s;
   }
   .analyze-btn:hover {
-    background: #2980b9;
+    opacity: 0.9;
   }
   .home-container {
     padding: 2rem;
     max-width: 800px;
     margin: 0 auto;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans);
   }
-  .error { color: #ff4444; }
-  .analyzing { color: #3498db; }
-  .completed { color: #2ecc71; }
+  .error { color: var(--destructive); }
+  .analyzing { color: var(--primary); }
+  .completed { color: var(--chart-4); }
   .analysis-output {
-    background: #f8f9fa;
+    background: var(--muted);
     padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
     margin: 1rem 0;
   }
   .moves-text {
-    font-family: monospace;
-    background: #eee;
+    font-family: var(--font-mono);
+    background: var(--secondary);
     padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     word-break: break-all;
   }
 </style>
