@@ -1,0 +1,24 @@
+h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.chart-container {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.mini-chart {
+  width: 100%;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}

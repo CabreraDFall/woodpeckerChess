@@ -1,0 +1,13 @@
+<section class="welcome-section">
+  <div class="welcome-text">
+    <h1>Welcome back, {{ userName }}</h1>
+    <p class="subtitle">Your training is looking sharp today.</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-secondary" routerLink="/import">
+      <lucide-icon [img]="ArrowDownToLine" size="18" [strokeWidth]="1.5"></lucide-icon>
+      Import
+    </button>
+    <button class="btn-primary">Continue Training</button>
+  </div>
+</section>

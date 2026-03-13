@@ -1,0 +1,9 @@
+<div class="progress-container">
+  <div class="progress-info" *ngIf="label || sublabel">
+    <span *ngIf="label">{{ label }}</span>
+    <span *ngIf="sublabel">{{ sublabel }}</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="percentage"></div>
+  </div>
+</div>

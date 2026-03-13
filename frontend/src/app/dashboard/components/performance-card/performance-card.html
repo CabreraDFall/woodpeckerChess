@@ -1,0 +1,10 @@
+<app-glass-card customClass="performance-card">
+  <h3>Performance</h3>
+  <div class="stats-list">
+    <div class="stat-item" *ngFor="let stat of stats">
+      <span class="stat-label">{{ stat.label }}</span>
+      <span class="stat-value">{{ stat.value }}</span>
+    </div>
+  </div>
+  <button class="btn-secondary full-width">View Detailed Stats</button>
+</app-glass-card>

@@ -1,0 +1,25 @@
+<app-glass-card customClass="cycle-card">
+  <div class="card-header">
+    <h3>Current Training Cycle</h3>
+    <span class="status-badge">ACTIVE</span>
+  </div>
+  <p class="card-subtitle">{{ cycleName }} · Cycle #{{ cycleNumber }}</p>
+
+  <app-progress-bar 
+    label="Progress" 
+    [sublabel]="progressSublabel" 
+    [value]="progress" 
+    [max]="totalPuzzles">
+  </app-progress-bar>
+
+  <div class="card-footer">
+    <span class="time-left">
+      <lucide-icon [img]="Clock" size="14"></lucide-icon> 
+      {{ daysRemaining }} days remaining
+    </span>
+    <a href="#" class="view-details">
+      View Details 
+      <lucide-icon [img]="ChevronRight" size="14"></lucide-icon>
+    </a>
+  </div>
+</app-glass-card>

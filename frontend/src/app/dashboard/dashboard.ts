@@ -1,23 +1,26 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Clock, ArrowDownToLine, CheckCircle2, XCircle, ChevronRight } from 'lucide-angular';
-import { RouterLink } from '@angular/router';
+import { WelcomeHeaderComponent } from './components/welcome-header/welcome-header';
+import { TrainingCycleCardComponent } from './components/training-cycle-card/training-cycle-card';
+import { PerformanceCardComponent } from './components/performance-card/performance-card';
+import { RecentPuzzlesCardComponent } from './components/recent-puzzles-card/recent-puzzles-card';
+import { WeeklyAccuracyCardComponent } from './components/weekly-accuracy-card/weekly-accuracy-card';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterLink],
+  imports: [
+    CommonModule, 
+    WelcomeHeaderComponent, 
+    TrainingCycleCardComponent,
+    PerformanceCardComponent,
+    RecentPuzzlesCardComponent,
+    WeeklyAccuracyCardComponent
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class DashboardComponent {
-  // Expose icons to the template
-  readonly Clock = Clock;
-  readonly ArrowDownToLine = ArrowDownToLine;
-  readonly CheckCircle2 = CheckCircle2;
-  readonly XCircle = XCircle;
-  readonly ChevronRight = ChevronRight;
-
   userName = 'GrandmasterFlash';
   planType = 'PREMIUM PLAN';
 
