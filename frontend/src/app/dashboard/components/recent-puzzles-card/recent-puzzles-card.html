@@ -1,0 +1,13 @@
+<app-glass-card customClass="puzzles-card">
+  <h3>Recent Puzzles</h3>
+  <div class="puzzles-list">
+    <div class="puzzle-item" *ngFor="let puzzle of puzzles">
+      <span class="puzzle-id">{{ puzzle.id }}</span>
+      <span class="puzzle-name">{{ puzzle.name }}</span>
+      <span class="puzzle-rating">{{ puzzle.rating }}</span>
+      <span class="puzzle-status" [style.color]="puzzle.success ? 'var(--success)' : 'var(--error)'">
+        <lucide-icon [img]="puzzle.success ? CheckCircle2 : XCircle" size="18"></lucide-icon>
+      </span>
+    </div>
+  </div>
+</app-glass-card>

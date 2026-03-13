@@ -1,0 +1,134 @@
+<div class="settings-container">
+  <div class="settings-header">
+    <h1>Training Configuration</h1>
+    <p class="subtitle">Set up your automated puzzle generation and game analysis engine.</p>
+  </div>
+
+  <div class="config-stack">
+    <!-- Section 1: Training Cycle -->
+    <section class="config-section">
+      <div class="section-label">TRAINING CYCLE</div>
+      <div class="config-card">
+        <div class="control-group">
+          <label>Cycle Duration</label>
+          <div class="duration-tabs">
+            <button [class.active]="cycleDuration() === '1 week'" (click)="cycleDuration.set('1 week')">1 Week</button>
+            <button [class.active]="cycleDuration() === '2 weeks'" (click)="cycleDuration.set('2 weeks')">2
+              Weeks</button>
+            <button [class.active]="cycleDuration() === '1 month'" (click)="cycleDuration.set('1 month')">1
+              Month</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="label-with-value">
+            <label>Max Puzzles per Cycle</label>
+            <span class="value-highlight">{{ maxPuzzles }}</span>
+          </div>
+          <div class="range-container">
+            <input type="range" min="50" max="500" step="50" [(ngModel)]="maxPuzzles">
+            <div class="range-labels">
+              <span>50 PUZZLES</span>
+              <span>500 PUZZLES</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Training Range</label>
+          <div class="range-date-box">
+            <lucide-icon [img]="Calendar" size="18"></lucide-icon>
+            <span>{{ trainingRange }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Import Games -->
+    <section class="config-section">
+      <div class="section-label">IMPORT GAMES</div>
+      <div class="config-card">
+        <div class="control-group">
+          <label>Filter Time Controls</label>
+          <div class="filter-chips">
+            <button [class.active]="selectedTimeControls().includes('bullet')"
+              (click)="setTimeControl('bullet')">Bullet</button>
+            <button [class.active]="selectedTimeControls().includes('blitz')"
+              (click)="setTimeControl('blitz')">Blitz</button>
+            <button [class.active]="selectedTimeControls().includes('rapid')"
+              (click)="setTimeControl('rapid')">Rapid</button>
+            <button [class.active]="selectedTimeControls().includes('classical')"
+              (click)="setTimeControl('classical')">Classical</button>
+          </div>
+        </div>
+
+        <button class="btn-primary-action" (click)="fetchGames()"
+          [disabled]="importStatus() !== 'idle' && importStatus() !== 'completed'">
+          <lucide-icon [img]="DownloadCloud" size="20"></lucide-icon>
+          <span>Fetch and Analyze Games</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 3: Processing Pipeline -->
+    <section class="config-section" *ngIf="importStatus() !== 'idle'">
+      <div class="section-label">PROCESSING PIPELINE</div>
+      <div class="config-card">
+        <div class="pipeline-header">
+          <label>Global Progress</label>
+          <span class="progress-percent">{{ importProgress() }}%</span>
+        </div>
+        <div class="global-progress-bar">
+          <div class="progress-fill" [style.width.%]="importProgress()"></div>
+        </div>
+
+        <div class="pipeline-steps">
+          <div class="pipeline-item" *ngFor="let step of steps" [class.active]="importStatus() === step.id"
+            [class.done]="(importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                importStatus() === 'completed'">
+            <div class="item-main">
+              <div class="status-icon">
+                <lucide-icon *ngIf="(importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                            (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                            importStatus() === 'completed'" [img]="CheckCircle"
+                  size="18"></lucide-icon>
+                <div class="pulse-dot" *ngIf="importStatus() === step.id"></div>
+                <div class="empty-dot" *ngIf="importStatus() !== step.id && !((importStatus() === 'analyzing' && step.id === 'fetching') || 
+                            (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                            importStatus() === 'completed')"></div>
+              </div>
+              <span class="step-name">{{ step.label }}</span>
+            </div>
+            <span class="step-stats">{{ step.stats }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Appearance -->
+    <section class="config-section">
+      <div class="config-card appearance-row">
+        <div class="appearance-info">
+          <div class="appearance-title">Appearance</div>
+          <p class="appearance-desc">Switch between light and dark themes</p>
+        </div>
+        <div class="theme-switch-pills">
+          <button [class.active]="theme === 'light'" (click)="theme = 'light'">Light</button>
+          <button [class.active]="theme === 'dark'" (click)="theme = 'dark'">Dark</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="config-footer">
+    <div class="system-status">
+      <div class="status-dot-active"></div>
+      <span>STATUS: All systems operational</span>
+    </div>
+    <div class="footer-actions">
+      <button class="btn-ghost" (click)="cancel()">Cancel</button>
+      <button class="btn-solid" (click)="saveChanges()">Save Changes</button>
+    </div>
+  </footer>
+</div>

@@ -1,0 +1,92 @@
+<div class="import-content">
+  <section class="page-header">
+    <h1>Import Games</h1>
+    <p class="subtitle">Download your games to generate personalized puzzles.</p>
+  </section>
+
+  <div class="import-grid">
+    <!-- Filters Card -->
+    <div class="glass-card filters-card">
+      <div class="card-title">Filters</div>
+      
+      <div class="filter-group">
+        <label>TIME CONTROL</label>
+        <div class="toggle-buttons">
+          <button [class.active]="selectedTimeControls().includes('bullet')" (click)="setTimeControl('bullet')">Bullet</button>
+          <button [class.active]="selectedTimeControls().includes('blitz')" (click)="setTimeControl('blitz')">Blitz</button>
+          <button [class.active]="selectedTimeControls().includes('rapid')" (click)="setTimeControl('rapid')">Rapid</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>DATE RANGE</label>
+        <div class="select-wrapper">
+          <select [value]="selectedDateRange()" (change)="selectedDateRange.set($any($event.target).value)">
+            <option value="1">Last 24 hours</option>
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-fetch" (click)="fetchGames()" [disabled]="importStatus() !== 'idle' && importStatus() !== 'completed'">
+        <lucide-icon [img]="ArrowDownToLine" size="18" [strokeWidth]="2.5"></lucide-icon>
+        <span>{{ importStatus() === 'idle' || importStatus() === 'completed' ? 'Fetch Games' : 'Fetching...' }}</span>
+      </button>
+    </div>
+
+    <!-- Progress Card -->
+    <div class="glass-card progress-card">
+      <!-- Idle state message -->
+      <div class="idle-state" *ngIf="importStatus() === 'idle'">
+        <div class="idle-icon">
+          <lucide-icon [img]="Monitor" size="48" [strokeWidth]="1.5"></lucide-icon>
+        </div>
+        <h4>No games fetched yet</h4>
+        <p>Set your filters and click "Fetch Games" to start generating puzzles.</p>
+      </div>
+
+      <div class="progress-section" *ngIf="importStatus() !== 'idle'">
+        <div class="progress-info">
+          <div class="current-status">{{ 
+            importStatus() === 'fetching' ? 'Downloading Games' : 
+            importStatus() === 'analyzing' ? 'Analyzing Positions' : 
+            importStatus() === 'generating' ? 'Generating Puzzles' : 
+            'Import Completed'
+          }}</div>
+          
+          <div class="progress-circle-container">
+            <svg class="progress-circle" viewBox="0 0 100 100">
+              <circle class="bg" cx="50" cy="50" r="42"></circle>
+              <circle class="fg" cx="50" cy="50" r="42" [style.stroke-dashoffset]="264 - (264 * importProgress() / 100)"></circle>
+              <text x="50" y="50" class="percentage">{{ importProgress() }}%</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="steps-list">
+          <div class="step-item" *ngFor="let step of steps" 
+                [class.active]="importStatus() === step.id"
+                [class.completed]="(importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                  (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                  importStatus() === 'completed'">
+            <span class="step-indicator">
+              <lucide-icon *ngIf="(importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                  (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                  importStatus() === 'completed'" 
+                           [img]="CheckCircle" size="16" [strokeWidth]="2.5"></lucide-icon>
+              <span class="dot" *ngIf="!((importStatus() === 'analyzing' && step.id === 'fetching') || 
+                                      (importStatus() === 'generating' && (step.id === 'fetching' || step.id === 'analyzing')) || 
+                                      importStatus() === 'completed')"></span>
+            </span>
+            <span class="step-label">{{ step.label }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Idle placeholder or empty state could go here if needed, 
+           but currently we just show nothing or have it collapsed -->
+    </div>
+  </div>
+</div>

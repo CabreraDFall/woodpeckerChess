@@ -1,0 +1,18 @@
+<app-glass-card customClass="accuracy-card">
+  <h3>Weekly Accuracy</h3>
+  <div class="chart-container">
+    <svg viewBox="0 0 400 120" class="mini-chart">
+      <defs>
+        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="var(--glass-10)" />
+          <stop offset="100%" stop-color="transparent" />
+        </linearGradient>
+      </defs>
+      <path d="M0,80 Q50,70 100,75 T200,50 T300,35 T400,45" fill="none" stroke="white" stroke-width="2" />
+      <path d="M0,80 Q50,70 100,75 T200,50 T300,35 T400,45 V120 H0 Z" fill="url(#chartGradient)" />
+    </svg>
+    <div class="chart-labels">
+      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+    </div>
+  </div>
+</app-glass-card>

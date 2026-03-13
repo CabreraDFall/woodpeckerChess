@@ -1,116 +1,111 @@
-<div class="analyze-container">
-  <h1>Game Analysis</h1>
-  
-  @if (loading()) {
-    <p>Loading game details...</p>
-  } @else if (error()) {
-    <p class="error">{{ error() }}</p>
-  } @else if (game()) {
-    <div class="analysis-section">
-      <div class="header-row">
-        <h2>Game: {{ game()?.id }}</h2>
-        <button 
-          (click)="startFullAnalysis()" 
-          [disabled]="analyzingFullGame()"
-          class="analyze-btn">
-          {{ analyzingFullGame() ? 'Analizando...' : 'Analizar Blunders' }}
-        </button>
+@if (loading()) {
+  <p>Loading game details...</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (game()) {
+  <div class="analyze-container">
+    <div class="header-row">
+      <h1>Análisis de Partida</h1>
+      <button 
+        (click)="startFullAnalysis()" 
+        [disabled]="analyzingFullGame()"
+        class="analyze-btn">
+        {{ analyzingFullGame() ? 'Analizando...' : 'Analizar Blunders' }}
+      </button>
+    </div>
+
+    <p class="players-info">
+      <span class="player white" [class.is-user]="isFallloriusWhite">
+        <lucide-icon [img]="Circle" size="16" class="color-indicator white-icon"></lucide-icon> {{ game()?.players?.white }}
+      </span> 
+      <span class="vs">vs</span> 
+      <span class="player black" [class.is-user]="!isFallloriusWhite">
+        <lucide-icon [img]="Circle" size="16" class="color-indicator black-icon" style="fill: currentColor"></lucide-icon> {{ game()?.players?.black }}
+      </span>
+    </p>
+
+    @if (analyzingFullGame()) {
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="analysisProgress()"></div>
+        <span class="progress-text">{{ analysisProgress() }}% ({{ currentEvalIndex }}/{{ totalMoves() }})</span>
       </div>
-
-      <p class="players-info">
-        <span class="player white" [class.is-user]="isFallloriusWhite">
-          <lucide-icon [img]="Circle" size="16" class="color-indicator white-icon"></lucide-icon> {{ game()?.players?.white }}
-        </span> 
-        <span class="vs">vs</span> 
-        <span class="player black" [class.is-user]="!isFallloriusWhite">
-          <lucide-icon [img]="Circle" size="16" class="color-indicator black-icon" style="fill: currentColor"></lucide-icon> {{ game()?.players?.black }}
-        </span>
-      </p>
-
-      @if (analyzingFullGame()) {
-        <div class="progress-container">
-          <div class="progress-bar" [style.width.%]="analysisProgress()"></div>
-          <span class="progress-text">{{ analysisProgress() }}% ({{ currentEvalIndex }}/{{ totalMoves() }})</span>
-        </div>
+    }
+    
+    <div class="analysis-output">
+      <p>Status: <span [class]="analysisStatus().toLowerCase()">{{ analysisStatus() }}</span></p>
+      @if (!analyzingFullGame() && evaluation()) {
+        <p><strong>Última Evaluación:</strong> {{ evaluation() }}</p>
       }
-      
-      <div class="analysis-output">
-        <p>Status: <span [class]="analysisStatus().toLowerCase()">{{ analysisStatus() }}</span></p>
-        @if (!analyzingFullGame() && evaluation()) {
-          <p><strong>Última Evaluación:</strong> {{ evaluation() }}</p>
-        }
+    </div>
+
+    @if (blunders().length > 0) {
+      <div class="blunders-section">
+        <h3>Ejercicios de Blunders ({{ blunders().length }})</h3>
+        <div class="blunders-grid">
+          @for (blunder of blunders(); track $index) {
+            <div class="blunder-card">
+              <div class="blunder-header">
+                <span class="move-num">Movimiento {{ blunder.moveNumber }}</span>
+                <span class="drop-tag">Error: -{{ blunder.drop }}</span>
+              </div>
+              <div class="blunder-details">
+                <p>Jugaste: <strong>{{ blunder.move }}</strong></p>
+                <p class="eval-change">{{ blunder.evalBefore }} → {{ blunder.evalAfter }}</p>
+              </div>
+              <button 
+                class="exercise-btn" 
+                (click)="solveExercise(blunder)"
+                [class.active]="selectedExercise() === blunder">
+                Resolver Ejercicio
+              </button>
+            </div>
+          }
+        </div>
       </div>
 
-      @if (blunders().length > 0) {
-        <div class="blunders-section">
-          <h3>Ejercicios de Blunders ({{ blunders().length }})</h3>
-          <div class="blunders-grid">
-            @for (blunder of blunders(); track $index) {
-              <div class="blunder-card">
-                <div class="blunder-header">
-                  <span class="move-num">Movimiento {{ blunder.moveNumber }}</span>
-                  <span class="drop-tag">Error: -{{ blunder.drop }}</span>
-                </div>
-                <div class="blunder-details">
-                  <p>Jugaste: <strong>{{ blunder.move }}</strong></p>
-                  <p class="eval-change">{{ blunder.evalBefore }} → {{ blunder.evalAfter }}</p>
-                </div>
-                <button 
-                  class="exercise-btn" 
-                  (click)="solveExercise(blunder)"
-                  [class.active]="selectedExercise() === blunder">
-                  Resolver Ejercicio
-                </button>
+      @if (selectedExercise()) {
+        <div class="exercise-console">
+          <div class="console-header">
+            <h3>Resolviendo Movimiento {{ selectedExercise().moveNumber }}</h3>
+            <button class="close-btn" (click)="closeExercise()"><lucide-icon [img]="X" size="16"></lucide-icon> Cerrar</button>
+          </div>
+          
+          <div class="best-lines">
+            <p class="console-label">Mejores alternativas (Diff < 0.5):</p>
+            @if (bestLines().length === 0) {
+              <p class="loading-lines">Calculando líneas...</p>
+            } @else {
+              <div class="lines-container">
+                @for (line of bestLines(); track $index) {
+                  <div class="line-item" [class.best]="$index === 0">
+                    <lucide-icon [img]="ArrowRight" class="move-arrow" size="16"></lucide-icon>
+                    <div class="variation-moves">
+                      @for (move of line.moves; track moveIndex; let moveIndex = $index) {
+                        <span class="move-chip" [class.white-move]="moveIndex % 2 === 0">{{ move }}</span>
+                      }
+                    </div>
+                    <span class="line-eval">{{ line.score > 0 ? '+' : '' }}{{ line.score }}</span>
+                  </div>
+                }
               </div>
             }
           </div>
         </div>
-
-        @if (selectedExercise()) {
-          <div class="exercise-console">
-            <div class="console-header">
-              <h3>Resolviendo Movimiento {{ selectedExercise().moveNumber }}</h3>
-              <button class="close-btn" (click)="closeExercise()"><lucide-icon [img]="X" size="16"></lucide-icon> Cerrar</button>
-            </div>
-            
-            <div class="best-lines">
-              <p class="console-label">Mejores alternativas (Diff < 0.5):</p>
-              @if (bestLines().length === 0) {
-                <p class="loading-lines">Calculando líneas...</p>
-              } @else {
-                <div class="lines-container">
-                  @for (line of bestLines(); track $index) {
-                    <div class="line-item" [class.best]="$index === 0">
-                      <lucide-icon [img]="ArrowRight" class="move-arrow" size="16"></lucide-icon>
-                      <div class="variation-moves">
-                        @for (move of line.moves; track moveIndex; let moveIndex = $index) {
-                          <span class="move-chip" [class.white-move]="moveIndex % 2 === 0">{{ move }}</span>
-                        }
-                      </div>
-                      <span class="line-eval">{{ line.score > 0 ? '+' : '' }}{{ line.score }}</span>
-                    </div>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-        }
       }
-      
-      <div class="moves-list">
-        <h3>Movimientos de la partida:</h3>
-        <p class="moves-text">{{ game()?.moves }}</p>
-      </div>
-      
-      <a routerLink="/" class="back-link"><lucide-icon [img]="ArrowLeft" size="16"></lucide-icon> Volver al Listado</a>
+    }
+    
+    <div class="moves-list">
+      <h3>Movimientos de la partida:</h3>
+      <p class="moves-text">{{ game()?.moves }}</p>
     </div>
-  }
-</div>
+    
+    <a routerLink="/" class="back-link"><lucide-icon [img]="ArrowLeft" size="16"></lucide-icon> Volver al Listado</a>
+  </div>
+}
 
 <style>
   .analyze-container {
-    padding: 2.5rem;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     font-family: var(--font-sans);
     color: var(--foreground);
@@ -123,8 +118,8 @@
     margin-bottom: 2rem;
   }
 
-  h1 { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem; }
-  h2 { font-size: 1.5rem; color: var(--muted-foreground); }
+  h1 { font-size: 2.25rem; font-weight: 800; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.02em; }
+  h2 { font-size: 1.5rem; color: var(--muted-foreground); margin: 0; }
   
   .analyze-btn {
     background: var(--primary);

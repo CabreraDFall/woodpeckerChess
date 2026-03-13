@@ -1,0 +1,52 @@
+h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.stats-list {
+  margin: 24px 0;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-weight: 700;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.btn-secondary {
+  background: var(--glass-05);
+  border: 1px solid var(--glass-10);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--glass-10);
+}

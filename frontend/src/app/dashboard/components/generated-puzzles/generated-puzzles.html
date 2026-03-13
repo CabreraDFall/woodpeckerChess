@@ -1,0 +1,36 @@
+<div class="header-row">
+  <h2>Generated Puzzles</h2>
+  <div class="actions">
+    <button class="btn-secondary filter-btn">
+      <lucide-icon [img]="Filter" size="16"></lucide-icon>
+      Filter
+    </button>
+
+  </div>
+</div>
+
+<app-glass-card customClass="puzzles-table-card">
+  <table class="puzzles-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>STATUS</th>
+        <th>SOURCE</th>
+        <th>ATTEMPTS</th>
+        <th>RATING</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let puzzle of puzzles">
+        <td class="id-cell">{{ puzzle.id }}</td>
+        <td class="status-cell">
+          <span class="status-dot" [style.background-color]="getStatusColor(puzzle.status)"></span>
+          {{ puzzle.status }}
+        </td>
+        <td class="source-cell">{{ puzzle.source }}</td>
+        <td class="attempts-cell">{{ puzzle.attempts }}</td>
+        <td class="rating-cell">{{ puzzle.rating }}</td>
+      </tr>
+    </tbody>
+  </table>
+</app-glass-card>

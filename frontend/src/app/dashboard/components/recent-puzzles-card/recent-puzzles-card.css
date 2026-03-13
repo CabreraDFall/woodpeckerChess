@@ -1,0 +1,42 @@
+h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.puzzles-list {
+  margin-top: 24px;
+}
+
+.puzzle-item {
+  display: grid;
+  grid-template-columns: 100px 1fr 100px 40px;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.puzzle-item:hover {
+  background: var(--glass-03);
+  transform: translateX(4px);
+}
+
+.puzzle-id {
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.puzzle-rating {
+  color: var(--muted-foreground);
+  text-align: right;
+  margin-right: 24px;
+  font-weight: 600;
+}
+
+.puzzle-status {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

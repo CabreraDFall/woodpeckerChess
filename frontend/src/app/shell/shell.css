@@ -21,6 +21,7 @@
   align-items: center;
   padding: 0 12px;
   margin-bottom: 48px;
+  cursor: pointer;
 }
 
 .logo-icon {
@@ -162,34 +163,8 @@
   font-size: 0.8rem;
 }
 
-/* Main Content Container & Scroll - These stay here for now as they relate to the page layout */
 .content-scroll {
   flex: 1;
   overflow-y: auto;
   padding: 40px;
-}
-
-/* Grid Layout */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  grid-gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.cycle-card {
-  grid-column: 1;
-}
-
-.performance-card {
-  grid-column: 2;
-}
-
-.puzzles-card {
-  grid-column: 1;
-}
-
-.accuracy-card {
-  grid-column: 2;
 }
