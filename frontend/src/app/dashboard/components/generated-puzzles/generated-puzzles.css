@@ -1,0 +1,105 @@
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: var(--glass-05);
+  border: 1px solid var(--glass-10);
+  color: var(--foreground);
+  font-size: 0.9rem;
+}
+
+.filter-btn:hover {
+  background: var(--glass-10);
+}
+
+.create-btn {
+  padding: 8px 20px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.puzzles-table-card {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.puzzles-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.puzzles-table th {
+  text-align: left;
+  padding: 20px 24px;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  border-bottom: 1px solid var(--glass-05);
+}
+
+.puzzles-table td {
+  padding: 18px 24px;
+  color: var(--foreground);
+  border-bottom: 1px solid var(--glass-05);
+}
+
+.puzzles-table tr:last-child td {
+  border-bottom: none;
+}
+
+.puzzles-table tr {
+  transition: background 0.2s ease;
+}
+
+.puzzles-table tr:hover {
+  background: var(--glass-03);
+}
+
+.id-cell {
+  color: var(--muted-foreground);
+  font-family: 'JetBrains Mono', monospace; /* If available, or just monospace */
+}
+
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.source-cell {
+  color: var(--muted-foreground);
+}
+
+.attempts-cell, .rating-cell {
+  font-weight: 500;
+}
