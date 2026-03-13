@@ -1,0 +1,34 @@
+<div class="landing-container">
+  <div class="landing-content">
+    <div class="logo-section">
+      <div class="logo-icon-large">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <h1 class="brand-title">Woodpecker</h1>
+      <p class="brand-slogan">Master your chess tactics by repeating your own mistakes using the Woodpecker Method.</p>
+    </div>
+
+    <div class="login-card">
+      <div class="input-group">
+        <input 
+          type="text" 
+          [(ngModel)]="lichessUsername" 
+          placeholder="Enter Lichess Username"
+          (keyup.enter)="connectWithLichess()"
+        >
+      </div>
+      
+      <button class="connect-btn" (click)="connectWithLichess()">
+        <lucide-icon [img]="Play" size="18"></lucide-icon>
+        Connect with Lichess
+      </button>
+
+      <p class="login-footer">
+        Your games will be automatically analyzed to generate high-quality personalized training puzzles from your blunders and inaccuracies.
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="overview-container">
+  <div class="overview-header">
+    <div class="header-content">
+      <h1>Training Overview</h1>
+      <p class="subtitle">Select a set to continue your Woodpecker routine.</p>
+    </div>
+
+  </div>
+
+  <div class="overview-grid">
+    <div class="cycle-card-wrapper" *ngFor="let cycle of trainingCycles">
+      <app-glass-card customClass="training-cycle-item">
+        <div class="cycle-item-header">
+          <div class="cycle-info">
+            <span class="frequency-badge">{{ cycle.frequency }}</span>
+            <h2 class="cycle-name">{{ cycle.name }}</h2>
+          </div>
+          <div class="status-icon" *ngIf="cycle.progress === 100">
+            <lucide-icon [img]="CheckCircle2" size="24" class="success-text"></lucide-icon>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-labels">
+            <span>{{ cycle.completedPuzzles }} / {{ cycle.totalPuzzles }} puzzles</span>
+            <span>{{ cycle.progress }}%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" [style.width.%]="cycle.progress"></div>
+          </div>
+        </div>
+
+        <div class="cycle-footer">
+          <div class="last-played">
+            <lucide-icon [img]="Clock" size="14"></lucide-icon>
+            <span>Last played {{ cycle.lastPlayed }}</span>
+          </div>
+          <button class="action-btn" (click)="startSession(cycle.id)" [class.outline]="cycle.progress === 100">
+            <lucide-icon [img]="Play" size="16" *ngIf="cycle.progress < 100"></lucide-icon>
+            {{ cycle.progress === 100 ? 'Review' : (cycle.progress > 0 ? 'Continue' : 'Start') }}
+          </button>
+        </div>
+      </app-glass-card>
+    </div>
+  </div>
+</div>

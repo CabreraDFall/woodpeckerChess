@@ -1,0 +1,119 @@
+.landing-container {
+  height: 100vh;
+  width: 100vw;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.landing-content {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 20px;
+}
+
+.logo-icon-large {
+  width: 80px;
+  height: 80px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+}
+
+.logo-icon-large svg {
+  width: 40px;
+  height: 40px;
+}
+
+.brand-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.brand-slogan {
+  color: #666666;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 16px 0 0 0;
+}
+
+.login-card {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  padding: 40px;
+  border-radius: 24px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.input-group input {
+  width: 100%;
+  background: #000000;
+  border: 1px solid #1a1a1a;
+  color: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #ffffff;
+}
+
+.connect-btn {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.connect-btn:hover {
+  transform: translateY(-2px);
+}
+
+.login-footer {
+  color: #333333;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .brand-title {
+    font-size: 2.5rem;
+  }
+}

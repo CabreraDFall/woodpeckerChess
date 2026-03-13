@@ -3,9 +3,9 @@
 } @else if (error()) {
   <p class="error">{{ error() }}</p>
 } @else if (game()) {
-  <div class="analysis-section">
+  <div class="analyze-container">
     <div class="header-row">
-      <h2>Game: {{ game()?.id }}</h2>
+      <h1>Análisis de Partida</h1>
       <button 
         (click)="startFullAnalysis()" 
         [disabled]="analyzingFullGame()"
@@ -105,8 +105,7 @@
 
 <style>
   .analyze-container {
-    padding: 2.5rem;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     font-family: var(--font-sans);
     color: var(--foreground);
@@ -119,8 +118,8 @@
     margin-bottom: 2rem;
   }
 
-  h1 { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem; }
-  h2 { font-size: 1.5rem; color: var(--muted-foreground); }
+  h1 { font-size: 2.25rem; font-weight: 800; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.02em; }
+  h2 { font-size: 1.5rem; color: var(--muted-foreground); margin: 0; }
   
   .analyze-btn {
     background: var(--primary);

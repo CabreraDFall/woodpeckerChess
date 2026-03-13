@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { LucideAngularModule, ChevronLeft, Clock, Lightbulb, RotateCcw, SkipForward, CheckCircle2, ChevronRight } from 'lucide-angular';
 import { GlassCardComponent } from '../shared/components/glass-card/glass-card';
 
@@ -41,7 +42,7 @@ export class TrainingComponent {
   // Mock board state
   board: (string | null)[][] = Array(8).fill(null).map(() => Array(8).fill(null));
 
-  constructor() {
+  constructor(private router: Router) {
     // Standard chess starting position
     // Black pieces
     this.board[0] = ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'];
@@ -80,5 +81,9 @@ export class TrainingComponent {
 
   isDarkSquare(row: number, col: number): boolean {
     return (row + col) % 2 !== 0;
+  }
+
+  goBack() {
+    this.router.navigate(['/training']);
   }
 }

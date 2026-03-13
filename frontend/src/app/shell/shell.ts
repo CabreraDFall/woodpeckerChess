@@ -24,5 +24,5 @@ export class ShellComponent {
   readonly ArrowDownToLine = ArrowDownToLine;
 
   userName = 'GrandmasterFlash';
-  planType = 'PREMIUM PLAN';
+  planType = 'FREE FOR ALL';
 }
