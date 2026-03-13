@@ -60,7 +60,7 @@
 }
 
 .nav-item:hover {
-  color: var(--foreground);
+  color: var(--muted-hover);
   background-color: var(--glass-05);
 }
 

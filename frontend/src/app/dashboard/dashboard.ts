@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, LayoutDashboard, PlayCircle, Puzzle, Eye, Import, LineChart, Settings, LogOut, Search, Clock, ArrowDownToLine, CheckCircle2, XCircle, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, Play, RotateCcw, ChartColumn, Download, History, Settings, LogOut, Search, Clock, ArrowDownToLine, CheckCircle2, XCircle, ChevronRight } from 'lucide-angular';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,11 +12,11 @@ import { LucideAngularModule, LayoutDashboard, PlayCircle, Puzzle, Eye, Import, 
 export class DashboardComponent {
   // Expose icons to the template
   readonly LayoutDashboard = LayoutDashboard;
-  readonly PlayCircle = PlayCircle;
-  readonly Puzzle = Puzzle;
-  readonly Eye = Eye;
-  readonly Import = Import;
-  readonly LineChart = LineChart;
+  readonly Play = Play;
+  readonly RotateCcw = RotateCcw;
+  readonly History = History;
+  readonly Download = Download;
+  readonly ChartColumn = ChartColumn;
   readonly Settings = Settings;
   readonly LogOut = LogOut;
   readonly Search = Search;
