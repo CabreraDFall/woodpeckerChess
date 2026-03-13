@@ -4,11 +4,13 @@ import { AnalyzeComponent } from './analyze/analyze';
 import { DashboardComponent } from './dashboard/dashboard';
 import { ImportComponent } from './import/import';
 import { AllPuzzlesComponent } from './all-puzzles/all-puzzles';
+import { TrainingComponent } from './training/training';
 
 export const routes: Routes = [
   { path: '', component: DashboardComponent },
   { path: 'home', component: HomeComponent },
   { path: 'analyze/:id', component: AnalyzeComponent },
   { path: 'import', component: ImportComponent },
-  { path: 'all-puzzles', component: AllPuzzlesComponent }
+  { path: 'all-puzzles', component: AllPuzzlesComponent },
+  { path: 'training', component: TrainingComponent }
 ];

@@ -1,0 +1,86 @@
+<div class="training-header">
+  <button class="back-btn">
+    <lucide-icon [img]="ChevronLeft" size="20"></lucide-icon>
+  </button>
+  <h2>Puzzle {{ puzzleNumber }} / {{ totalPuzzles }}</h2>
+  <div class="header-stats">
+    <div class="stat-item">
+      <lucide-icon [img]="Clock" size="18"></lucide-icon>
+      <span>{{ timer }}</span>
+    </div>
+    <div class="stat-item">
+      <lucide-icon [img]="Lightbulb" size="18"></lucide-icon>
+      <span>{{ hintsLeft }} hints left</span>
+    </div>
+  </div>
+</div>
+
+<div class="training-layout">
+  <div class="board-column">
+    <app-glass-card customClass="board-card">
+      <div class="chessboard">
+        <div class="board-grid">
+          <ng-container *ngFor="let row of board; let r = index">
+            <div *ngFor="let piece of row; let c = index" 
+                 class="square" 
+                 [class.dark]="isDarkSquare(r, c)">
+              <!-- Coordinates inside squares -->
+              <span *ngIf="c === 0" class="coord coord-rank" [class.dark-text]="!isDarkSquare(r, c)">
+                {{ 8 - r }}
+              </span>
+              <span *ngIf="r === 7" class="coord coord-file" [class.dark-text]="!isDarkSquare(r, c)">
+                {{ getFile(c) }}
+              </span>
+              
+              <img *ngIf="piece" [src]="getPieceUrl(piece)" class="piece">
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </app-glass-card>
+
+    <div class="board-controls">
+      <button class="control-btn secondary">
+        <lucide-icon [img]="Lightbulb" size="18"></lucide-icon>
+        Hint
+      </button>
+      <button class="control-btn secondary">
+        <lucide-icon [img]="RotateCcw" size="18"></lucide-icon>
+        Reset
+      </button>
+      <button class="control-btn ghost">
+        <lucide-icon [img]="SkipForward" size="18"></lucide-icon>
+        Skip
+      </button>
+    </div>
+  </div>
+
+  <div class="sidebar-column">
+    <app-glass-card customClass="sidebar-card">
+      <div class="moves-section">
+        <div class="card-title">MOVES PLAYED</div>
+        <div class="moves-list">
+          <div class="move-row" *ngFor="let move of moves">
+            <span class="move-number">{{ move.number }}.</span>
+            <span class="move-item" [class.active]="!move.black">{{ move.white }}</span>
+            <span class="move-item" *ngIf="move.black">{{ move.black }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint-section">
+        <div class="hint-container">
+          <div class="hint-icon-box">
+            <lucide-icon [img]="Lightbulb" size="32"></lucide-icon>
+          </div>
+          <p>Find the winning tactic for White...</p>
+        </div>
+      </div>
+
+      <div class="sim-actions">
+          <button class="sim-btn">Sim Win</button>
+          <button class="sim-btn">Sim Loss</button>
+      </div>
+    </app-glass-card>
+  </div>
+</div>
