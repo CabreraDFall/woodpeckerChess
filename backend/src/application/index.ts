@@ -193,11 +193,10 @@ app.get("/api/training-cycles", async (req, res) => {
 app.get("/api/exercises/:cycleId", async (req, res) => {
   try {
     const { exercises } = require('../infrastructure/persistence/schema');
-    // For now we map all mock ones to cycle if needed or return simply by userId for context
+    const paramsCycle = req.params.cycleId;
     const exList = await db.select()
       .from(exercises)
-      .where(eq(exercises.userId, MOCK_USER_ID));
-    // Optionally filter by cycleId if the schema supports it. (Schema has gameId and userId only so far)
+      .where(eq(exercises.cycleId, paramsCycle));
     res.json(exList);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -207,15 +206,16 @@ app.get("/api/exercises/:cycleId", async (req, res) => {
 app.post("/api/exercises", async (req, res) => {
   try {
     const { exercises } = require('../infrastructure/persistence/schema');
-    const { gameId, fen, solution, category, difficulty } = req.body;
+    const { gameId, cycleId, fen, solution, category, difficulty } = req.body;
     
-    if (!gameId || !fen || !solution) {
-      return res.status(400).json({ error: "Faltan parámetros requeridos: gameId, fen o solution" });
+    if (!gameId || !cycleId || !fen || !solution) {
+      return res.status(400).json({ error: "Faltan parámetros requeridos: gameId, cycleId, fen o solution" });
     }
 
     const exerciseResult = (await db.insert(exercises).values({
       gameId,
       userId: MOCK_USER_ID,
+      cycleId: cycleId,
       fen,
       solution,
       category: category || "blunder",

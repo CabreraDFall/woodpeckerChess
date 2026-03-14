@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Play, Clock, CheckCircle2 } from 'lucide-angular';
 import { Router } from '@angular/router';
 import { GlassCardComponent } from '../../shared/components/glass-card/glass-card';
@@ -21,42 +22,44 @@ interface TrainingCycle {
   templateUrl: './training-list.html',
   styleUrl: './training-list.css'
 })
-export class TrainingListComponent {
+export class TrainingListComponent implements OnInit {
   readonly Play = Play;
   readonly Clock = Clock;
   readonly CheckCircle2 = CheckCircle2;
+  
+  private http = inject(HttpClient);
 
-  trainingCycles: TrainingCycle[] = [
-    {
-      id: '1',
-      name: 'January Strategic Set',
-      progress: 45,
-      totalPuzzles: 120,
-      completedPuzzles: 54,
-      lastPlayed: '2h ago',
-      frequency: 'Weekly'
-    },
-    {
-      id: '2',
-      name: 'Endgame Mastery',
-      progress: 10,
-      totalPuzzles: 50,
-      completedPuzzles: 5,
-      lastPlayed: '1d ago',
-      frequency: 'Monthly'
-    },
-    {
-      id: '3',
-      name: 'Daily Tactics Routine',
-      progress: 100,
-      totalPuzzles: 20,
-      completedPuzzles: 20,
-      lastPlayed: '3h ago',
-      frequency: 'Daily'
-    }
-  ];
+  trainingCycles: TrainingCycle[] = [];
 
   constructor(private router: Router) {}
+
+  ngOnInit() {
+    this.http.get<any[]>('http://localhost:3000/api/training-cycles').subscribe({
+      next: (cycles) => {
+        // Map backend cycles to frontend interface
+        this.trainingCycles = cycles.map(c => ({
+          id: c.id,
+          name: c.name,
+          progress: 0,
+          totalPuzzles: 0,
+          completedPuzzles: 0,
+          lastPlayed: 'Never',
+          frequency: 'Monthly'
+        }));
+
+        // For each cycle, get the total number of puzzles
+        this.trainingCycles.forEach(cycle => {
+           this.http.get<any[]>(`http://localhost:3000/api/exercises/${cycle.id}`).subscribe({
+             next: (exercises) => {
+               cycle.totalPuzzles = exercises.length;
+               // Opcionalmente, calcularíamos progress aquí si existiera en la db
+             }
+           });
+        });
+      },
+      error: (err) => console.error('Failed to load training cycles', err)
+    });
+  }
 
   startSession(cycleId: string) {
     this.router.navigate(['/training/session', cycleId]);

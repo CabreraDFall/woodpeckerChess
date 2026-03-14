@@ -33,17 +33,6 @@ export const analysis = pgTable("analysis", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const exercises = pgTable("exercises", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  gameId: uuid("game_id").references(() => games.id),
-  userId: uuid("user_id").references(() => users.id),
-  fen: text("fen").notNull(),
-  solution: text("solution").notNull(),
-  category: text("category"), // 'blunder', 'tactic', etc.
-  difficulty: integer("difficulty"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
 export const trainingCycles = pgTable("training_cycles", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id),
@@ -54,3 +43,17 @@ export const trainingCycles = pgTable("training_cycles", {
   progress: jsonb("progress").default({}),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const exercises = pgTable("exercises", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gameId: uuid("game_id").references(() => games.id),
+  userId: uuid("user_id").references(() => users.id),
+  cycleId: uuid("cycle_id").references(() => trainingCycles.id), // <- New Relation
+  fen: text("fen").notNull(),
+  solution: text("solution").notNull(),
+  category: text("category"), // 'blunder', 'tactic', etc.
+  difficulty: integer("difficulty"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+

@@ -149,6 +149,7 @@ export class StockfishAnalysisService {
         // Enviar POST por cada blunder detectado al backend
         this.http.post('http://localhost:3000/api/exercises', {
           gameId: this.currentGameId,
+          cycleId: this.cycleId,
           fen: this.currentQueue[i - 1].fen, // La posición ANTES del blunder, para que el usuario encuentre la táctica
           solution: 'Mejor movimiento a derivar', // Para la Fase 2, un blunder es un ejercicio
           category: 'blunder',
