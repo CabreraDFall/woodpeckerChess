@@ -44,6 +44,16 @@ async function checkDb() {
       ON CONFLICT (id) DO NOTHING;
     `);
     console.log("[db]: Mock user ready for syncs.");
+
+    // Fix: Asegurar que la tabla exercises tiene la columna cycle_id si las migraciones fallaron
+    try {
+      await db.execute(sql`
+        ALTER TABLE exercises ADD COLUMN IF NOT EXISTS cycle_id uuid REFERENCES training_cycles(id);
+      `);
+      console.log("[db]: Column 'cycle_id' verified or added to 'exercises' table.");
+    } catch (colErr: any) {
+      console.error("[db]: Error updating exercises schema:", colErr.message);
+    }
   } catch (err: any) {
     console.error("[db]: Database connection failed. Make sure PostgreSQL is running and DATABASE_URL is correct.");
     console.error("[db]: Error:", err.message);

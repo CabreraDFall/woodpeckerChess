@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Chess } from 'chess.js';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +19,18 @@ export class StockfishAnalysisService {
   private currentEvalIndex = -1;
   private totalMoves = 0;
   private cycleId: string | null = null;
+  private maxPuzzles = Infinity;
+  private puzzlesGenerated = 0;
+
+  public progress$ = new Subject<{ status: string, count: number, max: number }>();
 
   constructor(private http: HttpClient) {}
 
-  public processGamesSequence(games: any[], cycleId: string) {
+  public processGamesSequence(games: any[], cycleId: string, maxPuzzles: number = Infinity) {
     this.gameQueue.push(...games);
     this.cycleId = cycleId;
+    this.maxPuzzles = maxPuzzles;
+    this.puzzlesGenerated = 0;
 
     if (!this.isProcessing) {
       this.initStockfish();
@@ -63,10 +70,11 @@ export class StockfishAnalysisService {
   }
 
   private processNextGame() {
-    if (this.gameQueue.length === 0) {
+    if (this.gameQueue.length === 0 || this.puzzlesGenerated >= this.maxPuzzles) {
       this.isProcessing = false;
       this.terminateStockfish();
-      console.log('[Analysis Service] Todo el lote procesado');
+      console.log(`[Analysis Service] Todo el lote procesado o límite alcanzado (${this.puzzlesGenerated}/${this.maxPuzzles} puzzles)`);
+      this.progress$.next({ status: 'completed', count: this.puzzlesGenerated, max: this.maxPuzzles });
       return;
     }
 
@@ -146,6 +154,14 @@ export class StockfishAnalysisService {
                          (item.color === 'black' && !this.isUserWhite);
 
       if (isUserMove && drop > 1.0) {
+        if (this.puzzlesGenerated >= this.maxPuzzles) {
+            console.log('[Analysis Service] Límite de puzzles alcanzado en este juego.');
+            break;
+        }
+
+        // Incremento inmediato para evitar race conditions
+        this.puzzlesGenerated++;
+        
         // Enviar POST por cada blunder detectado al backend
         this.http.post('http://localhost:3000/api/exercises', {
           gameId: this.currentGameId,
@@ -155,7 +171,14 @@ export class StockfishAnalysisService {
           category: 'blunder',
           difficulty: Math.round(drop * 100)
         }).subscribe({
-           error: (err) => console.error('[Analysis Service] Error guardando blunder:', err)
+           next: () => {
+             console.log(`[Analysis Service] Ejercicio guardado (${this.puzzlesGenerated}/${this.maxPuzzles})`);
+             this.progress$.next({ status: 'generating', count: this.puzzlesGenerated, max: this.maxPuzzles });
+           },
+           error: (err) => {
+             console.error('[Analysis Service] Error guardando blunder:', err);
+             // Opcionalmente decrementar si falló, pero para el límite es más seguro mantenerlo
+           }
         });
       }
     }

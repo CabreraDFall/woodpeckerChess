@@ -1,9 +1,10 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, ChevronRight, Search, ArrowDownToLine, DownloadCloud, CheckCircle, Monitor, Calendar, Globe, Cpu, Layout, History, Filter } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { StockfishAnalysisService } from '../shared/services/stockfish-analysis.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-settings',
@@ -12,7 +13,7 @@ import { StockfishAnalysisService } from '../shared/services/stockfish-analysis.
   templateUrl: './settings.html',
   styleUrl: './settings.css'
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit, OnDestroy {
   readonly ChevronRight = ChevronRight;
   readonly Search = Search;
   readonly ArrowDownToLine = ArrowDownToLine;
@@ -27,6 +28,7 @@ export class SettingsComponent {
   readonly Filter = Filter;
   private http = inject(HttpClient);
   private analysisService = inject(StockfishAnalysisService);
+  private analysisSubscription?: Subscription;
 
   // App Settings
   cycleDuration = signal('1 week');
@@ -45,8 +47,24 @@ export class SettingsComponent {
   steps = [
     { id: 'fetching', label: 'Downloading Games', stats: '1,420 games' },
     { id: 'analyzing', label: 'Analyzing Positions', stats: 'Stockfish 16.1' },
-    { id: 'generating', label: 'Generating Puzzles', stats: '164/250' }
+    { id: 'generating', label: 'Generating Puzzles', stats: '0/0' }
   ];
+
+  ngOnInit() {
+    this.analysisSubscription = this.analysisService.progress$.subscribe(progress => {
+      if (progress.status === 'generating') {
+        this.importStatus.set('generating');
+        this.steps[2].stats = `${progress.count}/${progress.max}`;
+      } else if (progress.status === 'completed') {
+        this.importStatus.set('completed');
+        this.importProgress.set(100);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.analysisSubscription?.unsubscribe();
+  }
 
   setTimeControl(type: string) {
     const current = this.selectedTimeControls();
@@ -80,7 +98,7 @@ export class SettingsComponent {
 
           // Trigger local stockfish blunder analysis phase
           if (response.games && response.trainingCycleId) {
-             this.analysisService.processGamesSequence(response.games, response.trainingCycleId);
+             this.analysisService.processGamesSequence(response.games, response.trainingCycleId, this.maxPuzzles);
              this.importStatus.set('analyzing');
           }
         },

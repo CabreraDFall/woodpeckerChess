@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Play, Clock, CheckCircle2 } from 'lucide-angular';
@@ -29,15 +29,14 @@ export class TrainingListComponent implements OnInit {
   
   private http = inject(HttpClient);
 
-  trainingCycles: TrainingCycle[] = [];
+  trainingCycles = signal<TrainingCycle[]>([]);
 
   constructor(private router: Router) {}
 
   ngOnInit() {
     this.http.get<any[]>('http://localhost:3000/api/training-cycles').subscribe({
       next: (cycles) => {
-        // Map backend cycles to frontend interface
-        this.trainingCycles = cycles.map(c => ({
+        const mappedCycles = cycles.map(c => ({
           id: c.id,
           name: c.name,
           progress: 0,
@@ -47,14 +46,17 @@ export class TrainingListComponent implements OnInit {
           frequency: 'Monthly'
         }));
 
-        // For each cycle, get the total number of puzzles
-        this.trainingCycles.forEach(cycle => {
-           this.http.get<any[]>(`http://localhost:3000/api/exercises/${cycle.id}`).subscribe({
-             next: (exercises) => {
-               cycle.totalPuzzles = exercises.length;
-               // Opcionalmente, calcularíamos progress aquí si existiera en la db
-             }
-           });
+        this.trainingCycles.set(mappedCycles);
+
+        // Fetch exercise counts for each cycle
+        mappedCycles.forEach(cycle => {
+          this.http.get<any[]>(`http://localhost:3000/api/exercises/${cycle.id}`).subscribe({
+            next: (exercises) => {
+              this.trainingCycles.update(current => 
+                current.map(c => c.id === cycle.id ? { ...c, totalPuzzles: exercises.length } : c)
+              );
+            }
+          });
         });
       },
       error: (err) => console.error('Failed to load training cycles', err)

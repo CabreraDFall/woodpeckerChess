@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, ChevronLeft, Clock, Lightbulb, RotateCcw, SkipForward, CheckCircle2, ChevronRight } from 'lucide-angular';
 import { GlassCardComponent } from '../shared/components/glass-card/glass-card';
+import { Chess, Square } from 'chess.js';
 
 interface Move {
   number: number;
@@ -17,7 +19,7 @@ interface Move {
   templateUrl: './training.html',
   styleUrl: './training.css'
 })
-export class TrainingComponent {
+export class TrainingComponent implements OnInit {
   readonly ChevronLeft = ChevronLeft;
   readonly Clock = Clock;
   readonly Lightbulb = Lightbulb;
@@ -26,31 +28,67 @@ export class TrainingComponent {
   readonly CheckCircle2 = CheckCircle2;
   readonly ChevronRight = ChevronRight;
 
-  puzzleNumber = 23;
-  totalPuzzles = 120;
-  timer = '01:42';
-  hintsLeft = 2;
-  isCorrect = false; // Toggle for testing success view
+  puzzleNumber = 1;
+  totalPuzzles = 0;
+  timer = '00:00';
+  hintsLeft = 3;
+  isCorrect = false;
 
-  moves: Move[] = [
-    { number: 1, white: 'e4', black: 'c5' },
-    { number: 2, white: 'Nf3', black: 'd6' },
-    { number: 3, white: 'd4', black: 'cxd4' },
-    { number: 4, white: 'Nxd4' },
-  ];
+  exercises: any[] = [];
+  currentPuzzleIndex = 0;
+  
+  moves: Move[] = [];
 
   // Mock board state
   board: (string | null)[][] = Array(8).fill(null).map(() => Array(8).fill(null));
 
-  constructor(private router: Router) {
-    // Standard chess starting position
-    // Black pieces
-    this.board[0] = ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'];
-    this.board[1] = ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'];
+  private route = inject(ActivatedRoute);
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private chess = new Chess();
+
+  ngOnInit() {
+    const cycleId = this.route.snapshot.paramMap.get('id');
+    if (cycleId) {
+      this.loadExercises(cycleId);
+    }
+  }
+
+  loadExercises(cycleId: string) {
+    this.http.get<any[]>(`http://localhost:3000/api/exercises/${cycleId}`).subscribe({
+      next: (exercises) => {
+        this.exercises = exercises;
+        this.totalPuzzles = exercises.length;
+        if (this.exercises.length > 0) {
+          this.setupPuzzle(0);
+        }
+      },
+      error: (err) => console.error('Error loading exercises', err)
+    });
+  }
+
+  setupPuzzle(index: number) {
+    this.currentPuzzleIndex = index;
+    this.puzzleNumber = index + 1;
+    const exercise = this.exercises[index];
+    this.chess.load(exercise.fen);
+    this.updateBoard();
+    this.isCorrect = false;
+    this.moves = []; // Logic to populate moves from PGN or variations can go here
+  }
+
+  updateBoard() {
+    const boardState = this.chess.board();
+    this.board = Array(8).fill(null).map(() => Array(8).fill(null));
     
-    // White pieces
-    this.board[6] = ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'];
-    this.board[7] = ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'];
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const piece = boardState[r][c];
+        if (piece) {
+          this.board[r][c] = `${piece.color}${piece.type.toUpperCase()}`;
+        }
+      }
+    }
   }
 
   getPieceUrl(piece: string): string {
