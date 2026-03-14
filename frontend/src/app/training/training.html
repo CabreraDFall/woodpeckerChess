@@ -15,7 +15,16 @@
   </div>
 </div>
 
-<div class="training-layout">
+<div *ngIf="totalPuzzles === 0" class="empty-training-state">
+    <app-glass-card customClass="empty-card">
+        <lucide-icon [img]="Lightbulb" size="48"></lucide-icon>
+        <h3>No exercises found</h3>
+        <p>This cycle doesn't have any exercises yet. Go to Settings to import and analyze games.</p>
+        <button class="next-btn" (click)="goBack()">Go Back</button>
+    </app-glass-card>
+</div>
+
+<div class="training-layout" *ngIf="totalPuzzles > 0">
   <div class="board-column">
     <app-glass-card customClass="board-card">
       <div class="chessboard">

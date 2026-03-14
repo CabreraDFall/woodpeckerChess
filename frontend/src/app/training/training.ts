@@ -55,15 +55,17 @@ export class TrainingComponent implements OnInit {
   }
 
   loadExercises(cycleId: string) {
+    console.log('[Training] Loading exercises for:', cycleId);
     this.http.get<any[]>(`http://localhost:3000/api/exercises/${cycleId}`).subscribe({
       next: (exercises) => {
+        console.log('[Training] Exercises fetched:', exercises.length);
         this.exercises = exercises;
         this.totalPuzzles = exercises.length;
         if (this.exercises.length > 0) {
           this.setupPuzzle(0);
         }
       },
-      error: (err) => console.error('Error loading exercises', err)
+      error: (err) => console.error('[Training] Error loading exercises', err)
     });
   }
 

@@ -329,3 +329,40 @@ app-glass-card {
     grid-template-columns: 1fr;
   }
 }
+
+.empty-training-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 2rem;
+  width: 100%;
+}
+
+.empty-card {
+  text-align: center;
+  padding: 4rem !important;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.empty-card lucide-icon {
+  color: #10b981;
+  opacity: 0.5;
+}
+
+.empty-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+}
+
+.empty-card p {
+  color: #666666;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}

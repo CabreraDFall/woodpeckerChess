@@ -204,11 +204,14 @@ app.get("/api/exercises/:cycleId", async (req, res) => {
   try {
     const { exercises } = require('../infrastructure/persistence/schema');
     const paramsCycle = req.params.cycleId;
+    console.log(`[api]: Fetching exercises for cycleId: ${paramsCycle}`);
     const exList = await db.select()
       .from(exercises)
       .where(eq(exercises.cycleId, paramsCycle));
+    console.log(`[api]: Found ${exList.length} exercises`);
     res.json(exList);
   } catch (err: any) {
+    console.error(`[api]: Error fetching exercises: ${err.message}`);
     res.status(500).json({ error: err.message });
   }
 });
