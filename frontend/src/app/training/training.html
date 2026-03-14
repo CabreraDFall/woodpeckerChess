@@ -80,6 +80,17 @@
 
   <div class="sidebar-column">
     <app-glass-card customClass="sidebar-card">
+      <div class="game-info-section" *ngIf="externalId()">
+        <div class="context-badges">
+          <a [href]="lichessUrl()" target="_blank" class="badge lichess-badge">
+            Lichess: {{ externalId() }}
+          </a>
+          <div class="badge history-badge">
+            History: {{ historyLength() }} moves
+          </div>
+        </div>
+      </div>
+
       <div class="moves-section">
         <div class="card-title">MOVES PLAYED</div>
         <div class="moves-list">

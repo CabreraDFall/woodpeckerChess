@@ -211,11 +211,48 @@ app-glass-card {
 }
 
 .moves-section {
-  background: #000000; /* Pure black box as in image */
+  background: #000000;
   border: 1px solid #1a1a1a;
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 24px;
+}
+
+.game-info-section {
+  margin-bottom: 20px;
+}
+
+.context-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.lichess-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.lichess-badge:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+}
+
+.history-badge {
+  background: #1a1a1a;
+  color: #bababa;
+  border-color: #2a2a2a;
 }
 
 .card-title {
