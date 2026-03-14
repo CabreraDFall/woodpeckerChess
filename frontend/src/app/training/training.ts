@@ -41,8 +41,11 @@ export class TrainingComponent implements OnInit {
   
   moves = signal<Move[]>([]);
 
-  // Mock board state
+  // Board state and visuals
   board = signal<(string | null)[][]>(Array(8).fill(null).map(() => Array(8).fill(null)));
+  isFlipped = signal(false);
+  legalMoves = signal<Square[]>([]);
+  lastMove = signal<{from: Square, to: Square} | null>(null);
 
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
@@ -86,10 +89,16 @@ export class TrainingComponent implements OnInit {
     this.puzzleNumber.set(index + 1);
     const exercise = this.exercises()[index];
     this.chess.load(exercise.fen);
+    
+    // Auto-flip based on turn
+    this.isFlipped.set(this.chess.turn() === 'b');
+    
     this.updateBoard();
     this.isCorrect.set(false);
     this.moves.set([]); 
     this.selectedSquare.set(null);
+    this.legalMoves.set([]);
+    this.lastMove.set(null);
   }
 
   updateBoard() {
@@ -113,42 +122,65 @@ export class TrainingComponent implements OnInit {
     const square = this.getSquare(row, col);
     
     if (this.selectedSquare()) {
+      const from = this.selectedSquare()!;
       // Try to move
       try {
         const move = this.chess.move({
-          from: this.selectedSquare()!,
+          from: from,
           to: square,
-          promotion: 'q' // Simplification for now
+          promotion: 'q' // Default promotion
         });
 
         if (move) {
           const moveLan = move.from + move.to;
-          const solution = this.exercises()[this.currentPuzzleIndex()].solution;
+          const currentExercises = this.exercises();
+          const currentIndex = this.currentPuzzleIndex();
+          const solution = currentExercises[currentIndex].solution;
           
           if (moveLan === solution) {
             this.isCorrect.set(true);
-            // Record the move in the UI list
             this.addMoveToUI(move);
+            this.lastMove.set({ from: move.from, to: move.to });
           } else {
-            // Wrong move, undo it
+            // Wrong move
             this.chess.undo();
             alert('Incorrect move! Try again.');
           }
           this.updateBoard();
           this.selectedSquare.set(null);
+          this.legalMoves.set([]);
         } else {
-          // Invalid move, try selecting new piece
-          this.selectedSquare.set(this.isValidSelection(square) ? square : null);
+          // Select same color piece instead
+          this.handleSelection(square);
         }
       } catch (e) {
-        // Not a valid move, try selecting new piece
-        this.selectedSquare.set(this.isValidSelection(square) ? square : null);
+        this.handleSelection(square);
       }
     } else {
-      // Selection
-      if (this.isValidSelection(square)) {
-        this.selectedSquare.set(square);
-      }
+      this.handleSelection(square);
+    }
+  }
+
+  isLegalMove(row: number, col: number): boolean {
+    const square = this.getSquare(row, col);
+    return this.legalMoves().includes(square);
+  }
+
+  isLastMove(row: number, col: number): boolean {
+    const last = this.lastMove();
+    if (!last) return false;
+    const square = this.getSquare(row, col);
+    return last.from === square || last.to === square;
+  }
+
+  handleSelection(square: Square) {
+    if (this.isValidSelection(square)) {
+      this.selectedSquare.set(square);
+      const moves = this.chess.moves({ square, verbose: true });
+      this.legalMoves.set(moves.map(m => m.to));
+    } else {
+      this.selectedSquare.set(null);
+      this.legalMoves.set([]);
     }
   }
 

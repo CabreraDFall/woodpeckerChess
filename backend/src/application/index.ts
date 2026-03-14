@@ -253,6 +253,18 @@ app.post("/api/exercises", async (req, res) => {
   }
 });
 
+app.delete("/api/exercises/:cycleId", async (req, res) => {
+  const paramsCycle = req.params.cycleId;
+  console.log(`[api]: Deleting exercises for cycleId: "${paramsCycle}"`);
+  try {
+    await db.delete(exercises).where(eq(exercises.cycleId, paramsCycle));
+    res.json({ message: "Exercises deleted successfully" });
+  } catch (err: any) {
+    console.error(`[api]: Error deleting exercises for ${paramsCycle}: ${err.message}`);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });

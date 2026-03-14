@@ -35,19 +35,24 @@
   <div class="board-column">
     <app-glass-card customClass="board-card">
       <div class="chessboard">
-        <div class="board-grid">
-          <ng-container *ngFor="let row of board(); let r = index">
-            <div *ngFor="let piece of row; let c = index" 
+        <div class="board-grid" [class.flipped]="isFlipped()">
+          <ng-container *ngFor="let row of (isFlipped() ? board().slice().reverse() : board()); let r = index">
+            <div *ngFor="let piece of (isFlipped() ? row.slice().reverse() : row); let c = index" 
                  class="square" 
-                 [class.dark]="isDarkSquare(r, c)"
-                 [class.selected]="selectedSquare() === getSquare(r, c)"
-                 (click)="onSquareClick(r, c)">
+                 [class.dark]="isDarkSquare(isFlipped() ? 7-r : r, isFlipped() ? 7-c : c)"
+                 [class.selected]="selectedSquare() === getSquare(isFlipped() ? 7-r : r, isFlipped() ? 7-c : c)"
+                 [class.last-move]="isLastMove(isFlipped() ? 7-r : r, isFlipped() ? 7-c : c)"
+                 (click)="onSquareClick(isFlipped() ? 7-r : r, isFlipped() ? 7-c : c)">
+              
+              <!-- Legal Move Dot -->
+              <div class="legal-dot" *ngIf="isLegalMove(isFlipped() ? 7-r : r, isFlipped() ? 7-c : c)"></div>
+
               <!-- Coordinates inside squares -->
-              <span *ngIf="c === 0" class="coord coord-rank" [class.dark-text]="!isDarkSquare(r, c)">
-                {{ 8 - r }}
+              <span *ngIf="(isFlipped() ? c === 7 : c === 0)" class="coord coord-rank" [class.dark-text]="!isDarkSquare(isFlipped() ? 7-r : r, isFlipped() ? 7-c : c)">
+                {{ isFlipped() ? r + 1 : 8 - r }}
               </span>
-              <span *ngIf="r === 7" class="coord coord-file" [class.dark-text]="!isDarkSquare(r, c)">
-                {{ getFile(c) }}
+              <span *ngIf="(isFlipped() ? r === 0 : r === 7)" class="coord coord-file" [class.dark-text]="!isDarkSquare(isFlipped() ? 7-r : r, isFlipped() ? 7-c : c)">
+                {{ getFile(isFlipped() ? 7-c : c) }}
               </span>
               
               <img *ngIf="piece" [src]="getPieceUrl(piece)" class="piece">
