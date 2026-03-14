@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Search, ArrowDownToLine, DownloadCloud, CheckCircle, Monitor } from 'lucide-angular';
 
 @Component({
@@ -16,6 +17,7 @@ export class ImportComponent {
   readonly DownloadCloud = DownloadCloud;
   readonly CheckCircle = CheckCircle;
   readonly Monitor = Monitor;
+  private http = inject(HttpClient);
 
   userName = 'GrandmasterFlash';
   planType = 'PREMIUM PLAN';
@@ -45,25 +47,20 @@ export class ImportComponent {
 
   fetchGames() {
     this.importStatus.set('fetching');
-    this.importProgress.set(0);
+    this.importProgress.set(10);
     
-    // Simulate progress
-    const interval = setInterval(() => {
-      const current = this.importProgress();
-      if (current < 100) {
-        this.importProgress.set(current + 2);
-        
-        if (current < 30) {
-          this.importStatus.set('fetching');
-        } else if (current < 80) {
-          this.importStatus.set('analyzing');
-        } else {
-          this.importStatus.set('generating');
+    this.http.post('http://localhost:3000/api/games/sync', { username: this.userName })
+      .subscribe({
+        next: (response: any) => {
+          this.importProgress.set(100);
+          this.importStatus.set('completed');
+          console.log('Games synced:', response);
+        },
+        error: (err) => {
+          console.error('Sync failed:', err);
+          this.importStatus.set('idle');
+          alert('Failed to sync games. Make sure the backend is running.');
         }
-      } else {
-        this.importStatus.set('completed');
-        clearInterval(interval);
-      }
-    }, 100);
+      });
   }
 }

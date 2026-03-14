@@ -83,7 +83,8 @@ export class TrainingComponent {
     return (row + col) % 2 !== 0;
   }
 
-  goBack() {
+  // Method to navigate back to the training list
+  public goBack() {
     this.router.navigate(['/training']);
   }
 }

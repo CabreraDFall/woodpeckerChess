@@ -79,12 +79,24 @@ export class AnalyzeComponent implements OnInit, OnDestroy {
           this.game.set(data);
           this.loading.set(false);
           this.isFallloriusWhite = data.players.white.toLowerCase().includes('falllorius');
+          this.fetchAnalysis(id);
           this.initStockfish();
         },
-        error: (err) => {
-          this.error.set('Failed to load game: ' + err.message);
-          this.loading.set(false);
-        }
+      });
+  }
+
+  private fetchAnalysis(gameId: string) {
+    this.http.get<any[]>(`http://localhost:3000/api/analysis/${gameId}`)
+      .subscribe({
+        next: (data) => {
+          // Initialize evaluations array with existing data
+          data.forEach(item => {
+            if (item.moveNumber !== undefined && item.eval !== undefined) {
+               this.evaluations[item.moveNumber] = parseFloat(item.eval);
+            }
+          });
+        },
+        error: (err) => console.warn('Could not fetch existing analysis:', err)
       });
   }
 
@@ -113,6 +125,7 @@ export class AnalyzeComponent implements OnInit, OnDestroy {
 
             if (this.analyzingFullGame()) {
               this.evaluations[this.currentEvalIndex] = score;
+              this.persistEvaluation(this.currentEvalIndex, score, line);
             }
 
             if (this.selectedExercise() && multiMatch && pvMatch) {
@@ -166,13 +179,33 @@ export class AnalyzeComponent implements OnInit, OnDestroy {
     }
   }
 
+  /* Method moved up to ensure compiler visibility */
+  private persistEvaluation(moveIndex: number, score: number, pvLine: string) {
+    const game = this.game();
+    const queueItem = this.analysisQueue[moveIndex];
+    if (!game || !queueItem) return;
+
+    const pv = pvLine.match(/ pv (.+)/)?.[1]?.split(' ') || [];
+
+    this.http.post('http://localhost:3000/api/analysis', {
+      gameId: game.id,
+      moveNumber: moveIndex,
+      fen: queueItem.fen,
+      eval: score.toFixed(2),
+      depth: 12,
+      pv: pv
+    }).subscribe({
+      error: (err) => console.error('Error persisting evaluation:', err)
+    });
+  }
+
   protected startFullAnalysis() {
     const game = this.game();
     if (!game || !game.moves) return;
 
     this.analyzingFullGame.set(true);
     this.analysisStatus.set('Analyzing full game...');
-    this.evaluations = [];
+    // We don't wipe this.evaluations to keep persisted data
     this.blunders.set([]);
     this.analysisQueue = [];
 
@@ -207,6 +240,12 @@ export class AnalyzeComponent implements OnInit, OnDestroy {
     this.analysisProgress.set(Math.round((this.currentEvalIndex / this.totalMoves()) * 100));
 
     if (this.currentEvalIndex < this.analysisQueue.length) {
+      // Skip if already evaluated
+      if (this.evaluations[this.currentEvalIndex] !== undefined) {
+        this.processNextInQueue();
+        return;
+      }
+
       const item = this.analysisQueue[this.currentEvalIndex];
       this.stockfish?.postMessage(`position fen ${item.fen}`);
       this.stockfish?.postMessage('go depth 12');

@@ -1,4 +1,4 @@
-import { drizzle } from "drizzle-orm/pg-javascript";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { pgTable, serial, text, integer, timestamp, jsonb, primaryKey, uuid } from "drizzle-orm/pg-core";
 import pg from "pg";
 import * as schema from "./schema";

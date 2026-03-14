@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, ChevronRight, Search, ArrowDownToLine, DownloadCloud, CheckCircle, Monitor, Calendar, Globe, Cpu, Layout, History, Filter } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 
@@ -23,13 +24,14 @@ export class SettingsComponent {
   readonly Layout = Layout;
   readonly History = History;
   readonly Filter = Filter;
+  private http = inject(HttpClient);
 
   // App Settings
   cycleDuration = signal('1 week');
   maxPuzzles = 100;
   autoGenerate = true;
   theme = 'dark';
-  trainingRange = 'Oct 24, 2023 - Nov 07, 2023';
+  trainingRange = 'Feb 01, 2026 - Mar 31, 2026';
 
   // Import Settings & State
   selectedSource = signal<'lichess' | 'chess.com'>('lichess');
@@ -55,25 +57,31 @@ export class SettingsComponent {
 
   fetchGames() {
     this.importStatus.set('fetching');
-    this.importProgress.set(0);
+    this.importProgress.set(10);
     
-    const interval = setInterval(() => {
-      const current = this.importProgress();
-      if (current < 100) {
-        this.importProgress.set(current + 2);
-        
-        if (current < 30) {
-          this.importStatus.set('fetching');
-        } else if (current < 80) {
-          this.importStatus.set('analyzing');
-        } else {
-          this.importStatus.set('generating');
+    // Using hardcoded userName for now as per current logic, 
+    // but in a real app this would come from a profile setting
+    const userName = 'falllorius'; 
+
+    this.http.post('http://localhost:3000/api/games/sync', { username: userName })
+      .subscribe({
+        next: (response: any) => {
+          this.importProgress.set(100);
+          this.importStatus.set('completed');
+          
+          // Log the count of games to the console as requested
+          const gameCount = response.games?.length || 0;
+          console.log(`Successfully fetched and synced ${gameCount} games from Lichess.`);
+          
+          // Update step stats if they exist
+          this.steps[0].stats = `${gameCount} games`;
+        },
+        error: (err) => {
+          console.error('Fetch failed:', err);
+          this.importStatus.set('idle');
+          this.importProgress.set(0);
         }
-      } else {
-        this.importStatus.set('completed');
-        clearInterval(interval);
-      }
-    }, 100);
+      });
   }
 
   saveChanges() {
