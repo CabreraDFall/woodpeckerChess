@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -28,19 +28,21 @@ export class TrainingComponent implements OnInit {
   readonly CheckCircle2 = CheckCircle2;
   readonly ChevronRight = ChevronRight;
 
-  puzzleNumber = 1;
-  totalPuzzles = 0;
-  timer = '00:00';
-  hintsLeft = 3;
-  isCorrect = false;
+  puzzleNumber = signal(1);
+  totalPuzzles = signal(0);
+  timer = signal('00:00');
+  hintsLeft = signal(3);
+  isCorrect = signal(false);
+  isLoading = signal(true);
 
-  exercises: any[] = [];
-  currentPuzzleIndex = 0;
+  exercises = signal<any[]>([]);
+  currentPuzzleIndex = signal(0);
+  selectedSquare = signal<Square | null>(null);
   
-  moves: Move[] = [];
+  moves = signal<Move[]>([]);
 
   // Mock board state
-  board: (string | null)[][] = Array(8).fill(null).map(() => Array(8).fill(null));
+  board = signal<(string | null)[][]>(Array(8).fill(null).map(() => Array(8).fill(null)));
 
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
@@ -48,49 +50,144 @@ export class TrainingComponent implements OnInit {
   private chess = new Chess();
 
   ngOnInit() {
-    const cycleId = this.route.snapshot.paramMap.get('id');
-    if (cycleId) {
-      this.loadExercises(cycleId);
-    }
+    this.route.paramMap.subscribe(params => {
+      const cycleId = params.get('id');
+      console.log('[Training] Route parameter id:', cycleId);
+      if (cycleId) {
+        this.loadExercises(cycleId);
+      }
+    });
   }
 
   loadExercises(cycleId: string) {
-    console.log('[Training] Loading exercises for:', cycleId);
+    this.isLoading.set(true);
+    console.log('[Training] Requesting exercises for:', cycleId);
     this.http.get<any[]>(`http://localhost:3000/api/exercises/${cycleId}`).subscribe({
       next: (exercises) => {
-        console.log('[Training] Exercises fetched:', exercises.length);
-        this.exercises = exercises;
-        this.totalPuzzles = exercises.length;
-        if (this.exercises.length > 0) {
+        console.log('[Training] Result received. Count:', exercises.length);
+        this.exercises.set(exercises);
+        this.totalPuzzles.set(exercises.length);
+        if (exercises.length > 0) {
           this.setupPuzzle(0);
         }
       },
-      error: (err) => console.error('[Training] Error loading exercises', err)
+      error: (err) => {
+        console.error('[Training] HTTP Error:', err);
+        this.isLoading.set(false);
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      }
     });
   }
 
   setupPuzzle(index: number) {
-    this.currentPuzzleIndex = index;
-    this.puzzleNumber = index + 1;
-    const exercise = this.exercises[index];
+    this.currentPuzzleIndex.set(index);
+    this.puzzleNumber.set(index + 1);
+    const exercise = this.exercises()[index];
     this.chess.load(exercise.fen);
     this.updateBoard();
-    this.isCorrect = false;
-    this.moves = []; // Logic to populate moves from PGN or variations can go here
+    this.isCorrect.set(false);
+    this.moves.set([]); 
+    this.selectedSquare.set(null);
   }
 
   updateBoard() {
     const boardState = this.chess.board();
-    this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+    const newBoard = Array(8).fill(null).map(() => Array(8).fill(null));
     
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const piece = boardState[r][c];
         if (piece) {
-          this.board[r][c] = `${piece.color}${piece.type.toUpperCase()}`;
+          newBoard[r][c] = `${piece.color}${piece.type.toUpperCase()}`;
         }
       }
     }
+    this.board.set(newBoard);
+  }
+
+  onSquareClick(row: number, col: number) {
+    if (this.isCorrect()) return;
+
+    const square = this.getSquare(row, col);
+    
+    if (this.selectedSquare()) {
+      // Try to move
+      try {
+        const move = this.chess.move({
+          from: this.selectedSquare()!,
+          to: square,
+          promotion: 'q' // Simplification for now
+        });
+
+        if (move) {
+          const moveLan = move.from + move.to;
+          const solution = this.exercises()[this.currentPuzzleIndex()].solution;
+          
+          if (moveLan === solution) {
+            this.isCorrect.set(true);
+            // Record the move in the UI list
+            this.addMoveToUI(move);
+          } else {
+            // Wrong move, undo it
+            this.chess.undo();
+            alert('Incorrect move! Try again.');
+          }
+          this.updateBoard();
+          this.selectedSquare.set(null);
+        } else {
+          // Invalid move, try selecting new piece
+          this.selectedSquare.set(this.isValidSelection(square) ? square : null);
+        }
+      } catch (e) {
+        // Not a valid move, try selecting new piece
+        this.selectedSquare.set(this.isValidSelection(square) ? square : null);
+      }
+    } else {
+      // Selection
+      if (this.isValidSelection(square)) {
+        this.selectedSquare.set(square);
+      }
+    }
+  }
+
+  isValidSelection(square: Square): boolean {
+    const piece = this.chess.get(square);
+    return !!piece && piece.color === this.chess.turn();
+  }
+
+  addMoveToUI(move: any) {
+    const moveText = move.san;
+    const currentMoves = this.moves();
+    const lastMove = currentMoves[currentMoves.length - 1];
+    
+    if (!lastMove || lastMove.black) {
+      this.moves.update(m => [...m, {
+        number: lastMove ? lastMove.number + 1 : 1,
+        white: moveText
+      }]);
+    } else {
+      this.moves.update(m => {
+        const last = m[m.length - 1];
+        last.black = moveText;
+        return [...m];
+      });
+    }
+  }
+
+  nextPuzzle() {
+    if (this.currentPuzzleIndex() < this.exercises().length - 1) {
+      this.setupPuzzle(this.currentPuzzleIndex() + 1);
+    } else {
+      alert('Training finished!');
+      this.goBack();
+    }
+  }
+
+  getSquare(row: number, col: number): Square {
+    const files = 'abcdefgh';
+    return (files[col] + (8 - row)) as Square;
   }
 
   getPieceUrl(piece: string): string {

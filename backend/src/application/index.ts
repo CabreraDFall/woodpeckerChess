@@ -8,6 +8,7 @@ import { LichessService } from "../infrastructure/external/LichessService";
 
 import { sql, eq, desc } from "drizzle-orm";
 import { db } from "../infrastructure/persistence/db";
+import { trainingCycles, exercises } from "../infrastructure/persistence/schema";
 
 dotenv.config();
 
@@ -189,29 +190,37 @@ app.post("/api/games/sync", async (req, res) => {
 // Training Cycles & Exercises Routes
 app.get("/api/training-cycles", async (req, res) => {
   try {
-    const { trainingCycles } = require('../infrastructure/persistence/schema');
     const cycles = await db.select()
       .from(trainingCycles)
       .where(eq(trainingCycles.userId, MOCK_USER_ID))
       .orderBy(desc(trainingCycles.createdAt));
     res.json(cycles);
   } catch (err: any) {
+    console.error(`[api]: Error fetching cycles: ${err.message}`);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.get("/api/exercises/:cycleId", async (req, res) => {
+  const paramsCycle = req.params.cycleId;
+  console.log(`[api]: Request received for cycleId: "${paramsCycle}"`);
+  
   try {
-    const { exercises } = require('../infrastructure/persistence/schema');
-    const paramsCycle = req.params.cycleId;
-    console.log(`[api]: Fetching exercises for cycleId: ${paramsCycle}`);
-    const exList = await db.select()
-      .from(exercises)
-      .where(eq(exercises.cycleId, paramsCycle));
-    console.log(`[api]: Found ${exList.length} exercises`);
+    // 1. Try standard Drizzle query
+    const exList = await db.select().from(exercises).where(eq(exercises.cycleId, paramsCycle));
+    console.log(`[api]: Standard query returned ${exList.length} items`);
+    
+    if (exList.length === 0) {
+      // 2. Fallback to raw SQL just in case of Drizzle/UUID mismatch issues
+      console.log(`[api]: No results with standard query, trying raw SQL...`);
+      const rawRes = await db.execute(sql`SELECT * FROM exercises WHERE cycle_id = ${paramsCycle}`);
+      console.log(`[api]: Raw SQL query returned ${rawRes.rows.length} items`);
+      return res.json(rawRes.rows);
+    }
+    
     res.json(exList);
   } catch (err: any) {
-    console.error(`[api]: Error fetching exercises: ${err.message}`);
+    console.error(`[api]: ERROR in /api/exercises/${paramsCycle}:`, err);
     res.status(500).json({ error: err.message });
   }
 });

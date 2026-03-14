@@ -16,6 +16,7 @@ export class StockfishAnalysisService {
   private isUserWhite = false;
   private currentQueue: { fen: string, move: string, color: string, moveNum: number }[] = [];
   private evaluations: number[] = [];
+  private bestMoves: string[] = [];
   private currentEvalIndex = -1;
   private totalMoves = 0;
   private cycleId: string | null = null;
@@ -57,6 +58,10 @@ export class StockfishAnalysisService {
             this.evaluations[this.currentEvalIndex] = score;
           }
         } else if (line.startsWith('bestmove')) {
+          const match = line.match(/bestmove\s+(\S+)/);
+          if (match) {
+            this.bestMoves[this.currentEvalIndex] = match[1];
+          }
           this.processNextPosition();
         }
       };
@@ -94,6 +99,7 @@ export class StockfishAnalysisService {
 
     this.currentQueue = [];
     this.evaluations = [];
+    this.bestMoves = [];
     this.currentEvalIndex = -1;
 
     const chess = new Chess();
@@ -166,8 +172,8 @@ export class StockfishAnalysisService {
         this.http.post('http://localhost:3000/api/exercises', {
           gameId: this.currentGameId,
           cycleId: this.cycleId,
-          fen: this.currentQueue[i - 1].fen, // La posición ANTES del blunder, para que el usuario encuentre la táctica
-          solution: 'Mejor movimiento a derivar', // Para la Fase 2, un blunder es un ejercicio
+          fen: this.currentQueue[i - 1].fen, // Position BEFORE the blunder
+          solution: this.bestMoves[i - 1],   // Best move in that position
           category: 'blunder',
           difficulty: Math.round(drop * 100)
         }).subscribe({
