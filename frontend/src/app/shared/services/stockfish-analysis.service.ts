@@ -17,6 +17,7 @@ export class StockfishAnalysisService {
   private currentQueue: { fen: string, move: string, color: string, moveNum: number }[] = [];
   private evaluations: number[] = [];
   private bestMoves: string[] = [];
+  private principalVariations: string[] = []; // Capture PV sequence
   private currentEvalIndex = -1;
   private totalMoves = 0;
   private cycleId: string | null = null;
@@ -56,6 +57,12 @@ export class StockfishAnalysisService {
             const cp = parseInt(match[1]);
             const score = cp / 100;
             this.evaluations[this.currentEvalIndex] = score;
+            
+            // Capture PV from the same line if available
+            const pvMatch = line.match(/pv\s+(.+)$/);
+            if (pvMatch) {
+              this.principalVariations[this.currentEvalIndex] = pvMatch[1];
+            }
           }
         } else if (line.startsWith('bestmove')) {
           const match = line.match(/bestmove\s+(\S+)/);
@@ -100,6 +107,7 @@ export class StockfishAnalysisService {
     this.currentQueue = [];
     this.evaluations = [];
     this.bestMoves = [];
+    this.principalVariations = [];
     this.currentEvalIndex = -1;
 
     const chess = new Chess();
@@ -146,49 +154,50 @@ export class StockfishAnalysisService {
   private detectAndSaveBlunders() {
     for (let i = 1; i < this.evaluations.length; i++) {
       const item = this.currentQueue[i];
-      const prevEval = this.evaluations[i - 1]; // Evaluación del turno previo
+      const prevEval = this.evaluations[i - 1]; 
       const currentEval = this.evaluations[i];
 
+      const absolutePrevEval = Math.abs(prevEval);
+      const isWinningBefore = absolutePrevEval > 1.5;
+      
       let drop = 0;
       if (item.color === 'white') {
-        drop = prevEval - currentEval; // Si la eval baja, el blanco perdió
+        drop = prevEval - currentEval;
       } else {
-        drop = currentEval - prevEval; // Si la eval sube, el negro perdió
+        drop = currentEval - prevEval;
       }
 
       const isUserMove = (item.color === 'white' && this.isUserWhite) ||
                          (item.color === 'black' && !this.isUserWhite);
 
-      if (isUserMove && drop > 1.0) {
+      if (isUserMove && isWinningBefore && drop > 1.0) {
         if (this.puzzlesGenerated >= this.maxPuzzles) {
-            console.log('[Analysis Service] Límite de puzzles alcanzado en este juego.');
+            console.log('[Analysis Service] Límite de puzzles alcanzado.');
             break;
         }
 
-        // Incremento inmediato para evitar race conditions
         this.puzzlesGenerated++;
         
-        // Enviar POST por cada blunder detectado al backend
+        const pv = this.principalVariations[i - 1];
+        
         this.http.post('http://localhost:3000/api/exercises', {
           gameId: this.currentGameId,
           cycleId: this.cycleId,
-          fen: this.currentQueue[i - 1].fen, // Position BEFORE the blunder
-          solution: this.bestMoves[i - 1],   // Best move in that position
-          category: 'blunder',
+          fen: this.currentQueue[i - 1].fen,
+          solution: pv || this.bestMoves[i - 1],
+          category: 'decisive-advantage-lost',
           difficulty: Math.round(drop * 100)
         }).subscribe({
            next: () => {
-             console.log(`[Analysis Service] Ejercicio guardado (${this.puzzlesGenerated}/${this.maxPuzzles})`);
+             console.log(`[Analysis Service] Ejercicio avanzado guardado (${this.puzzlesGenerated}/${this.maxPuzzles})`);
              this.progress$.next({ status: 'generating', count: this.puzzlesGenerated, max: this.maxPuzzles });
            },
            error: (err) => {
              console.error('[Analysis Service] Error guardando blunder:', err);
-             // Opcionalmente decrementar si falló, pero para el límite es más seguro mantenerlo
            }
         });
       }
     }
-    // Análisis del juego actual completado, pasar al siguiente
     this.processNextGame();
   }
 

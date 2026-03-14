@@ -40,6 +40,8 @@ export class TrainingComponent implements OnInit {
   selectedSquare = signal<Square | null>(null);
   
   moves = signal<Move[]>([]);
+  solutionMoves = signal<string[]>([]);
+  currentMoveIndex = signal(0);
 
   // Board state and visuals
   board = signal<(string | null)[][]>(Array(8).fill(null).map(() => Array(8).fill(null)));
@@ -90,6 +92,11 @@ export class TrainingComponent implements OnInit {
     const exercise = this.exercises()[index];
     this.chess.load(exercise.fen);
     
+    // Parse solution sequence
+    const sequence = exercise.solution.split(/\s+/);
+    this.solutionMoves.set(sequence);
+    this.currentMoveIndex.set(0);
+    
     // Auto-flip based on turn
     this.isFlipped.set(this.chess.turn() === 'b');
     
@@ -123,34 +130,28 @@ export class TrainingComponent implements OnInit {
     
     if (this.selectedSquare()) {
       const from = this.selectedSquare()!;
-      // Try to move
       try {
         const move = this.chess.move({
           from: from,
           to: square,
-          promotion: 'q' // Default promotion
+          promotion: 'q'
         });
 
         if (move) {
           const moveLan = move.from + move.to;
-          const currentExercises = this.exercises();
-          const currentIndex = this.currentPuzzleIndex();
-          const solution = currentExercises[currentIndex].solution;
+          const expectedMove = this.solutionMoves()[this.currentMoveIndex()];
           
-          if (moveLan === solution) {
-            this.isCorrect.set(true);
-            this.addMoveToUI(move);
-            this.lastMove.set({ from: move.from, to: move.to });
+          if (moveLan === expectedMove) {
+            this.handleCorrectMove(move);
           } else {
             // Wrong move
             this.chess.undo();
             alert('Incorrect move! Try again.');
+            this.updateBoard();
+            this.selectedSquare.set(null);
+            this.legalMoves.set([]);
           }
-          this.updateBoard();
-          this.selectedSquare.set(null);
-          this.legalMoves.set([]);
         } else {
-          // Select same color piece instead
           this.handleSelection(square);
         }
       } catch (e) {
@@ -158,6 +159,48 @@ export class TrainingComponent implements OnInit {
       }
     } else {
       this.handleSelection(square);
+    }
+  }
+
+  private handleCorrectMove(move: any) {
+    this.addMoveToUI(move);
+    this.lastMove.set({ from: move.from, to: move.to });
+    this.currentMoveIndex.update(idx => idx + 1);
+    this.updateBoard();
+    this.selectedSquare.set(null);
+    this.legalMoves.set([]);
+
+    if (this.currentMoveIndex() === this.solutionMoves().length) {
+      this.isCorrect.set(true);
+    } else {
+      // Opponent response
+      setTimeout(() => this.playOpponentMove(), 600);
+    }
+  }
+
+  private playOpponentMove() {
+    const opponentMoveLan = this.solutionMoves()[this.currentMoveIndex()];
+    if (!opponentMoveLan) return;
+
+    try {
+      const move = this.chess.move({
+        from: (opponentMoveLan.substring(0, 2) as any),
+        to: (opponentMoveLan.substring(2, 4) as any),
+        promotion: (opponentMoveLan.length > 4 ? opponentMoveLan[4] as any : 'q')
+      });
+
+      if (move) {
+        this.addMoveToUI(move);
+        this.lastMove.set({ from: move.from, to: move.to });
+        this.currentMoveIndex.update(idx => idx + 1);
+        this.updateBoard();
+
+        if (this.currentMoveIndex() === this.solutionMoves().length) {
+          this.isCorrect.set(true);
+        }
+      }
+    } catch (e) {
+      console.error('[Training] Error playing opponent move:', e);
     }
   }
 
