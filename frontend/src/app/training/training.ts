@@ -48,6 +48,14 @@ export class TrainingComponent implements OnInit {
   isFlipped = signal(false);
   legalMoves = signal<Square[]>([]);
   lastMove = signal<{from: Square, to: Square} | null>(null);
+  
+  // Context metadata
+  externalId = signal<string | null>(null);
+  historyLength = signal(0);
+  lichessUrl = computed(() => {
+    const id = this.externalId();
+    return id ? `https://lichess.org/${id}` : null;
+  });
 
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
@@ -106,6 +114,11 @@ export class TrainingComponent implements OnInit {
     this.selectedSquare.set(null);
     this.legalMoves.set([]);
     this.lastMove.set(null);
+
+    // Set context metadata
+    this.externalId.set(exercise.externalId || null);
+    const history = exercise.previousPositions || [];
+    this.historyLength.set(history.length);
   }
 
   updateBoard() {

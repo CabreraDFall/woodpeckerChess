@@ -228,7 +228,7 @@ app.get("/api/exercises/:cycleId", async (req, res) => {
 app.post("/api/exercises", async (req, res) => {
   try {
     const { exercises } = require('../infrastructure/persistence/schema');
-    const { gameId, cycleId, fen, solution, category, difficulty } = req.body;
+    const { gameId, externalId, cycleId, fen, solution, category, difficulty, previousPositions } = req.body;
     
     if (!gameId || !cycleId || !fen || !solution) {
       return res.status(400).json({ error: "Faltan parámetros requeridos: gameId, cycleId, fen o solution" });
@@ -236,9 +236,11 @@ app.post("/api/exercises", async (req, res) => {
 
     const exerciseResult = (await db.insert(exercises).values({
       gameId,
+      externalId,
       userId: MOCK_USER_ID,
       cycleId: cycleId,
       fen,
+      previousPositions: previousPositions || [],
       solution,
       category: category || "blunder",
       difficulty: difficulty || 1200

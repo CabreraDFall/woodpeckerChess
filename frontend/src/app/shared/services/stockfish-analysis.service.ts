@@ -12,8 +12,9 @@ export class StockfishAnalysisService {
   private gameQueue: any[] = [];
   
   // Current game state
-  private currentGameId: string | null = null;
   private isUserWhite = false;
+  private currentGameId: string | null = null;
+  private currentExternalId: string | null = null;
   private currentQueue: { fen: string, move: string, color: string, moveNum: number }[] = [];
   private evaluations: number[] = [];
   private bestMoves: string[] = [];
@@ -58,10 +59,11 @@ export class StockfishAnalysisService {
             const score = cp / 100;
             this.evaluations[this.currentEvalIndex] = score;
             
-            // Capture PV from the same line if available
-            const pvMatch = line.match(/pv\s+(.+)$/);
-            if (pvMatch) {
-              this.principalVariations[this.currentEvalIndex] = pvMatch[1];
+            // Robust PV capture: only take moves after 'pv'
+            const pvIndex = line.indexOf(' pv ');
+            if (pvIndex !== -1) {
+              const pv = line.substring(pvIndex + 4).trim();
+              this.principalVariations[this.currentEvalIndex] = pv;
             }
           }
         } else if (line.startsWith('bestmove')) {
@@ -93,6 +95,7 @@ export class StockfishAnalysisService {
     this.isProcessing = true;
     const game = this.gameQueue.shift();
     this.currentGameId = game.id;
+    this.currentExternalId = game.externalId || game.external_id; // Support both just in case
     // We assume Falllorius is the local user name according to db mock requirements
     this.isUserWhite = game.white.toLowerCase().includes('falllorius');
     this.startGameAnalysis(game.pgn);
@@ -179,12 +182,22 @@ export class StockfishAnalysisService {
         this.puzzlesGenerated++;
         
         const pv = this.principalVariations[i - 1];
+        const finaleSolution = pv || this.bestMoves[i - 1];
+
+        // Collect full context (from the start of the game up to this position)
+        const previousPositions = this.currentQueue
+          .slice(0, i - 1)
+          .map(q => q.fen);
+
+        console.log(`[Analysis Service] Saving puzzle. Solution: "${finaleSolution}". Total history positions: ${previousPositions.length}`);
         
         this.http.post('http://localhost:3000/api/exercises', {
           gameId: this.currentGameId,
+          externalId: this.currentExternalId,
           cycleId: this.cycleId,
           fen: this.currentQueue[i - 1].fen,
-          solution: pv || this.bestMoves[i - 1],
+          previousPositions: previousPositions,
+          solution: finaleSolution,
           category: 'decisive-advantage-lost',
           difficulty: Math.round(drop * 100)
         }).subscribe({

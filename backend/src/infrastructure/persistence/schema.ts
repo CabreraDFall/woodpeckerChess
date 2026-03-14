@@ -48,8 +48,10 @@ export const exercises = pgTable("exercises", {
   id: uuid("id").primaryKey().defaultRandom(),
   gameId: uuid("game_id").references(() => games.id),
   userId: uuid("user_id").references(() => users.id),
-  cycleId: uuid("cycle_id").references(() => trainingCycles.id), // <- New Relation
+  cycleId: uuid("cycle_id").references(() => trainingCycles.id),
+  externalId: text("external_id"), // Lichess or Chess.com ID
   fen: text("fen").notNull(),
+  previousPositions: jsonb("previous_positions"), // Historial de FENs
   solution: text("solution").notNull(),
   category: text("category"), // 'blunder', 'tactic', etc.
   difficulty: integer("difficulty"),

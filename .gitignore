@@ -56,3 +56,6 @@ coverage/
 **/coverage/
 __screenshots__/
 
+backend/drizzle/
+backend/drizzle/*
+backend/drizzle/schema.sql
