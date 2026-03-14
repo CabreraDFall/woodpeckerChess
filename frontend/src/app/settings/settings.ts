@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, ChevronRight, Search, ArrowDownToLine, DownloadCloud, CheckCircle, Monitor, Calendar, Globe, Cpu, Layout, History, Filter } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
+import { StockfishAnalysisService } from '../shared/services/stockfish-analysis.service';
 
 @Component({
   selector: 'app-settings',
@@ -25,6 +26,7 @@ export class SettingsComponent {
   readonly History = History;
   readonly Filter = Filter;
   private http = inject(HttpClient);
+  private analysisService = inject(StockfishAnalysisService);
 
   // App Settings
   cycleDuration = signal('1 week');
@@ -75,6 +77,12 @@ export class SettingsComponent {
           
           // Update step stats if they exist
           this.steps[0].stats = `${gameCount} games`;
+
+          // Trigger local stockfish blunder analysis phase
+          if (response.games && response.trainingCycleId) {
+             this.analysisService.processGamesSequence(response.games, response.trainingCycleId);
+             this.importStatus.set('analyzing');
+          }
         },
         error: (err) => {
           console.error('Fetch failed:', err);

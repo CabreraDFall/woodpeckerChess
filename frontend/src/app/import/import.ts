@@ -2,6 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Search, ArrowDownToLine, DownloadCloud, CheckCircle, Monitor } from 'lucide-angular';
+import { StockfishAnalysisService } from '../shared/services/stockfish-analysis.service';
 
 @Component({
   selector: 'app-import',
@@ -18,6 +19,7 @@ export class ImportComponent {
   readonly CheckCircle = CheckCircle;
   readonly Monitor = Monitor;
   private http = inject(HttpClient);
+  private analysisService = inject(StockfishAnalysisService);
 
   userName = 'GrandmasterFlash';
   planType = 'PREMIUM PLAN';
@@ -55,6 +57,10 @@ export class ImportComponent {
           this.importProgress.set(100);
           this.importStatus.set('completed');
           console.log('Games synced:', response);
+          if (response.games && response.trainingCycleId) {
+            this.analysisService.processGamesSequence(response.games, response.trainingCycleId);
+            this.importStatus.set('analyzing');
+          }
         },
         error: (err) => {
           console.error('Sync failed:', err);
